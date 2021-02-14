@@ -6,6 +6,10 @@ Py Bipartite Matching
 .. image:: https://img.shields.io/pypi/v/py_bipartite_matching.svg
         :target: https://pypi.python.org/pypi/py_bipartite_matching
 
+.. image:: https://pyup.io/repos/github/FranciscoMoretti/py_bipartite_matching/shield.svg
+     :target: https://pyup.io/repos/github/FranciscoMoretti/py_bipartite_matching/
+     :alt: Updates
+
 .. image:: https://img.shields.io/travis/FranciscoMoretti/py_bipartite_matching.svg
         :target: https://travis-ci.com/FranciscoMoretti/py_bipartite_matching
 
