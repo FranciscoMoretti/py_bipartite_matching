@@ -276,13 +276,13 @@ def _enum_maximum_matchings_iter(graph: BipartiteGraph[TLeft, TRight, TEdgeValue
         return
 
     # Step 2
-    # Find a circle in the directed matching graph
-    # Note that this circle alternates between nodes from the left and the right part of the graph
+    # Find a cycle in the directed matching graph
+    # Note that this cycle alternates between nodes from the left and the right part of the graph
     raw_cycle = directed_match_graph.find_cycle()
 
     if raw_cycle:
-        # Make sure the circle "starts"" in the the left part
-        # If not, start the circle from the second node, which is in the left part
+        # Make sure the cycle "starts"" in the the left part
+        # If not, start the cycle from the second node, which is in the left part
         if raw_cycle[0][0] != LEFT:
             cycle = tuple([raw_cycle[-1][1]] + list(x[1] for x in raw_cycle[:-1]))
         else:
@@ -296,7 +296,7 @@ def _enum_maximum_matchings_iter(graph: BipartiteGraph[TLeft, TRight, TEdgeValue
 
         # Step 5
         # Construct new matching M' by flipping edges along the cycle, i.e. change the direction of all the
-        # edges in the circle
+        # edges in the cycle
         new_match = matching.copy()
         for i in range(0, len(cycle), 2):
             new_match[cycle[i]] = cycle[i - 1]  # type: ignore
