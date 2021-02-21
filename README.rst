@@ -19,9 +19,12 @@ Py Bipartite Matching
 
 
 
+Algorithms for Enumerating All Perfect, Maximum and Maximal Matchings in Bipartite Graphs.
 
-Py Bipartite Matching contains bipartite graphs matching algorithms.
-
+Algorithm described in "Algorithms for Enumerating All Perfect, Maximum and Maximal Matchings in Bipartite Graphs"
+By Takeaki Uno in "Algorithms and Computation: 8th International Symposium, ISAAC '97 Singapore,
+December 17-19, 1997 Proceedings"
+See http://dx.doi.org/10.1007/3-540-63890-3_11
 
 * Free software: MIT license
 * Documentation: https://py-bipartite-matching.readthedocs.io.
