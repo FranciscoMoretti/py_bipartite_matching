@@ -4,7 +4,7 @@
 The `BipartiteGraph` class is used to represent a bipartite graph as a dictionary. In particular,
 `BipartiteGraph.find_matching()` can be used to find a maximum matching in such a graph.
 
-The function `enum_maximum_matchings_iter` can be used to enumerate all maximum matchings of a `BipartiteGraph`.
+The function `enum_maximum_matchings` can be used to enumerate all maximum matchings of a `BipartiteGraph`.
 """
 
 from typing import (Dict, Generic, Hashable, Iterator, List, Set, Tuple, TypeVar, Union, cast, MutableMapping)
@@ -16,7 +16,7 @@ try:
 except ImportError:
     Digraph = Graph = None
 
-__all__ = ['BipartiteGraph', 'enum_maximum_matchings_iter']
+__all__ = ['BipartiteGraph', 'enum_maximum_matchings']
 
 T = TypeVar('T')
 TLeft = TypeVar('TLeft', bound=Hashable)
@@ -255,7 +255,7 @@ class _DirectedMatchGraph(Dict[Node, NodeSet], Generic[TLeft, TRight]):
         return cast(NodeList, [])
 
 
-def enum_maximum_matchings_iter(graph: BipartiteGraph[TLeft, TRight, TEdgeValue]) -> Iterator[Dict[TLeft, TRight]]:
+def enum_maximum_matchings(graph: BipartiteGraph[TLeft, TRight, TEdgeValue]) -> Iterator[Dict[TLeft, TRight]]:
     matching = graph.find_matching()
     if matching:
         yield matching

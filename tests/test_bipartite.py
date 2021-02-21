@@ -6,7 +6,7 @@ import hypothesis.strategies as st
 from hypothesis import given
 import pytest
 
-from py_bipartite_matching.matching.bipartite import BipartiteGraph, _DirectedMatchGraph, enum_maximum_matchings_iter
+from py_bipartite_matching.matching.bipartite import BipartiteGraph, _DirectedMatchGraph, enum_maximum_matchings
 
 
 @st.composite
@@ -27,7 +27,7 @@ def bipartite_graph(draw):
 def test_enum_maximum_matchings_iter_correctness(graph):
     size = None
     matchings = set()
-    for matching in enum_maximum_matchings_iter(graph):
+    for matching in enum_maximum_matchings(graph):
         if size is None:
             size = len(matching)
         assert len(matching) == size, "Matching has a different size than the first one"
@@ -41,7 +41,7 @@ def test_enum_maximum_matchings_iter_correctness(graph):
 @pytest.mark.parametrize('n, m', filter(lambda x: x[0] >= x[1], itertools.product(range(1, 6), range(0, 4))))
 def test_completeness(n, m):
     graph = BipartiteGraph(map(lambda x: (x, True), itertools.product(range(n), range(m))))
-    count = sum(1 for _ in enum_maximum_matchings_iter(graph))
+    count = sum(1 for _ in enum_maximum_matchings(graph))
     expected_count = m > 0 and math.factorial(n) / math.factorial(n - m) or 0
     assert count == expected_count
 
