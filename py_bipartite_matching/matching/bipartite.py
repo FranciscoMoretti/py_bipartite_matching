@@ -297,41 +297,25 @@ def _enum_maximum_matchings_iter(graph: BipartiteGraph[TLeft, TRight, TEdgeValue
         # Step 5
         # Construct new matching M' by flipping edges along the cycle, i.e. change the direction of all the
         # edges in the cycle
-        new_match = matching.copy()
+        matching_prime = matching.copy()
         for i in range(0, len(cycle), 2):
-            new_match[cycle[i]] = cycle[i - 1]  # type: ignore
+            matching_prime[cycle[i]] = cycle[i - 1]  # type: ignore
 
-        yield new_match
-
-        # Construct G+(e) and G-(e)
-        old_value = graph[edge]
-        del graph[edge]
-
-        # Step 7
-        # Recurse with the new matching M' but without the edge e
-        directed_match_graph_minus = _DirectedMatchGraph(graph, new_match)
-
-        yield from _enum_maximum_matchings_iter(graph, new_match, directed_match_graph_minus)
-
-        graph[edge] = old_value
+        yield matching_prime
 
         # Step 6
-        # Recurse with the old matching M but without the edge e
-
-        graph_plus = graph
-
-        edges = []
-        for left, right in list(graph_plus.edges()):
-            if left == edge[0] or right == edge[1]:
-                edges.append((left, right, graph_plus[left, right]))
-                del graph_plus[left, right]
-
+        # Construct G+(e) and D(G+(e), M\e)
+        graph_plus = graph.without_nodes(edge)
         directed_match_graph_plus = _DirectedMatchGraph(graph_plus, matching)
-
+        # Recurse with the old matching M but without the edge e
         yield from _enum_maximum_matchings_iter(graph_plus, matching, directed_match_graph_plus)
 
-        for left, right, value in edges:
-            graph_plus[left, right] = value
+        # Step 7
+        # Construct G-(e) and D(G-(e), M')
+        graph_minus = graph.without_edge(edge)
+        directed_match_graph_minus = _DirectedMatchGraph(graph_minus, matching_prime)
+        # Recurse with the new matching M' but without the edge e
+        yield from _enum_maximum_matchings_iter(graph_minus, matching_prime, directed_match_graph_minus)
 
     else:
         # Step 8
@@ -362,11 +346,11 @@ def _enum_maximum_matchings_iter(graph: BipartiteGraph[TLeft, TRight, TEdgeValue
         # Construct M'
         # Exchange the direction of the path left1 -> right -> left2
         # to left1 <- right <- left2 in the new matching
-        new_match = matching.copy()
-        del new_match[left1]
-        new_match[left2] = right
+        matching_prime = matching.copy()
+        del matching_prime[left1]
+        matching_prime[left2] = right
 
-        yield new_match
+        yield matching_prime
 
         edge = (left2, right)
 
@@ -374,11 +358,11 @@ def _enum_maximum_matchings_iter(graph: BipartiteGraph[TLeft, TRight, TEdgeValue
         graph_plus = graph.without_nodes(edge)
         graph_minus = graph.without_edge(edge)
 
-        dgm_plus = _DirectedMatchGraph(graph_plus, new_match)
+        dgm_plus = _DirectedMatchGraph(graph_plus, matching_prime)
         dgm_minus = _DirectedMatchGraph(graph_minus, matching)
 
         # Step 9
-        yield from _enum_maximum_matchings_iter(graph_plus, new_match, dgm_plus)
+        yield from _enum_maximum_matchings_iter(graph_plus, matching_prime, dgm_plus)
 
         # Step 10
         yield from _enum_maximum_matchings_iter(graph_minus, matching, dgm_minus)
