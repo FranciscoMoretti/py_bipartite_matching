@@ -319,8 +319,12 @@ def _enum_perfect_matchings_iter(graph: BipartiteGraph[TLeft, TRight, TEdgeValue
 
     # Find a cycle in the directed matching graph
     # Note that this cycle alternates between nodes from the left and the right part of the graph
-    # TODO: This doesn't ensure that the edge is part of the matching, therefore it doesn't work everytime.
-    raw_cycle = graph.find_cycle()
+
+    # TODO: avoid doing a directed graph by implementing missing algorithm steps from paper
+    directed_match_graph = _DirectedMatchGraph(graph, matching)
+    raw_cycle = directed_match_graph.find_cycle()
+
+    # raw_cycle = graph.find_cycle()
 
     if not raw_cycle:
         return
