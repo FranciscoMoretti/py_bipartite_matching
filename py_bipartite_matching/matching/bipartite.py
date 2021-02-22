@@ -16,7 +16,7 @@ try:
 except ImportError:
     Digraph = Graph = None
 
-__all__ = ['BipartiteGraph', 'enum_maximum_matchings']
+__all__ = ['BipartiteGraph', 'enum_perfect_matchings', 'enum_maximum_matchings']
 
 T = TypeVar('T')
 TLeft = TypeVar('TLeft', bound=Hashable)
@@ -170,6 +170,46 @@ class BipartiteGraph(Generic[TLeft, TRight, TEdgeValue], MutableMapping[Tuple[TL
         # that go from LEFT to RIGHT
         return dict((tail[1], head[1]) for tail, head in matching.items() if tail[0] == LEFT)
 
+
+    def _find_cycle(self, node: Node , path: NodeList, visited: NodeSet) -> NodeList: 
+        """
+        A recursive function that uses visited[] and parent to detect 
+        cycle in subgraph reachable from a node. 
+        """
+        if node in visited:
+            try:
+                index = path.index(node)
+                return path[index:]
+            except ValueError:
+                return cast(NodeList, [])
+
+        visited.add(node)
+
+        if node not in self._graph:
+            return cast(NodeList, [])
+
+        # Recur for all the vertices adjacent to this vertex 
+        for other in self._graph[node]:
+            if len(path) == 0 or path[-1] != other:
+                # If the node is not visited then recurse on it 
+                cycle = self._find_cycle(other, path + [node], visited)
+                if cycle:
+                    return cycle
+
+        return cast(NodeList, [])
+           
+    def find_cycle(self) -> NodeList: 
+        """Returns true if the graph contains a cycle, else false."""
+        # Initialize the visited set 
+        visited = cast(NodeSet, set())
+        # Call the recursive helper function to detect cycle in different DFS trees 
+        for n in self._graph.keys(): 
+            # Don't recur if it is already visited 
+            cycle = self._find_cycle(n, cast(NodeList, []), visited)   
+            if cycle: 
+                return cycle
+        return cast(NodeList, [])
+
     def without_nodes(self, edge: Edge) -> 'BipartiteGraph[TLeft, TRight, TEdgeValue]':
         """Returns a copy of this bipartite graph with the given edge and its adjacent nodes removed."""
         return BipartiteGraph(((n1, n2), v) for (n1, n2), v in self._edges.items() if n1 != edge[0] and n2 != edge[1])
@@ -253,6 +293,79 @@ class _DirectedMatchGraph(Dict[Node, NodeSet], Generic[TLeft, TRight]):
                 return cycle
 
         return cast(NodeList, [])
+
+
+def enum_perfect_matchings(graph: BipartiteGraph[TLeft, TRight, TEdgeValue]) -> Iterator[Dict[TLeft, TRight]]:
+    if len(graph._left) != len(graph._right):
+        return
+    size = len(graph._left)
+    matching = graph.find_matching()
+    if matching and len(matching) == size:
+        yield matching
+        graph = graph.__copy__()
+        yield from _enum_perfect_matchings_iter(graph, matching)
+
+
+def _enum_perfect_matchings_iter(graph: BipartiteGraph[TLeft, TRight, TEdgeValue], matching: Dict[TLeft, TRight]) \
+    -> Iterator[Dict[TLeft, TRight]]:
+    # Algorithm described in "Algorithms for Enumerating All Perfect, Maximum and Maximal Matchings in Bipartite Graphs"
+    # By Takeaki Uno in "Algorithms and Computation: 8th International Symposium, ISAAC '97 Singapore,
+    # December 17-19, 1997 Proceedings"
+    # See http://dx.doi.org/10.1007/3-540-63890-3_11
+
+    # Step 1
+    if len(graph) == 0:
+        return
+
+    # Find a cycle in the directed matching graph
+    # Note that this cycle alternates between nodes from the left and the right part of the graph
+    # TODO: This doesn't ensure that the edge is part of the matching, therefore it doesn't work everytime.
+    raw_cycle = graph.find_cycle()
+
+    if not raw_cycle:
+        return
+
+    # Make sure the cycle "starts"" in the the left part
+    # If not, start the cycle from the second node, which is in the left part
+    if raw_cycle[0][0] != LEFT:
+        cycle = tuple([raw_cycle[-1][1]] + list(x[1] for x in raw_cycle[:-1]))
+    else:
+        cycle = tuple(x[1] for x in raw_cycle)
+
+    # Step 2 - TODO: Properly find right edge? (to get complexity bound)
+    edge = cast(Edge, cycle[:2])
+
+    # Step 3
+    # already done because we are not really finding the optimal edge
+
+    # Step 4
+    # Construct new matching M' by flipping edges along the cycle, i.e. change the direction of all the
+    # edges in the cycle
+    matching_prime = matching.copy()
+    for i in range(0, len(cycle), 2):
+        matching_prime[cycle[i]] = cycle[i - 1]  # type: ignore
+
+    yield matching_prime
+
+    # Construct G+(e)
+    graph_plus = graph.without_nodes(edge)
+
+    # Step 5
+    # TODO: Trim unnecessary edges from G+(e).
+
+    # Step 6
+    # Recurse with the old matching M but without the edge e
+    yield from _enum_perfect_matchings_iter(graph_plus, matching)
+
+    # Construct G-(e)
+    graph_minus = graph.without_edge(edge)
+
+    # Step 7
+    # Trim unnecessary edges from G-(e).
+    
+    # Step 8
+    # Recurse with the new matching M' but without the edge e
+    yield from _enum_perfect_matchings_iter(graph_minus, matching_prime)
 
 
 def enum_maximum_matchings(graph: BipartiteGraph[TLeft, TRight, TEdgeValue]) -> Iterator[Dict[TLeft, TRight]]:
