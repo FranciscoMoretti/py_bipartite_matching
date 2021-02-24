@@ -10,7 +10,7 @@ from py_bipartite_matching.matching.kosaraju import Kosaraju
 
 # @example(create_cubelet_graph(example_0))
 # @given(bipartite_graph())
-def test_korasaju():
+def test_kosaraju():
     # Create a graph given in the above diagram 
     g = Kosaraju(5) 
     g.addEdge(1, 0) 
