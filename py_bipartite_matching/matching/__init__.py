@@ -3,3 +3,4 @@
 
 from . import bipartite
 from . import hopcroft_karp
+from . import takeaki

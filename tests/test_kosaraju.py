@@ -7,7 +7,7 @@ from hypothesis import example, given
 import pytest
 
 from py_bipartite_matching.matching.kosaraju import Kosaraju
-
+from py_bipartite_matching.matching.bipartite import BipartiteGraph
 # @example(create_cubelet_graph(example_0))
 # @given(bipartite_graph())
 def test_kosaraju():
