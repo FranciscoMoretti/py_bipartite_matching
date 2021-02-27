@@ -9,7 +9,7 @@ from typing import (Dict, Generic, Hashable, Iterator, List, Set, Tuple, TypeVar
 
 from py_bipartite_matching.matching.bipartite import (
     BipartiteGraph,
-    _DirectedMatchGraph,
+    DirectedMatchGraph,
     T,
     TLeft,
     TRight,
@@ -51,7 +51,7 @@ def _enum_perfect_matchings_iter(graph: BipartiteGraph[TLeft, TRight, TEdgeValue
     # Note that this cycle alternates between nodes from the left and the right part of the graph
 
     # TODO: avoid doing a directed graph by implementing missing algorithm steps from paper
-    directed_match_graph = _DirectedMatchGraph(graph, matching)
+    directed_match_graph = DirectedMatchGraph(graph, matching)
     raw_cycle = directed_match_graph.find_cycle()
 
     # raw_cycle = graph.find_cycle()
@@ -107,11 +107,11 @@ def enum_maximum_matchings(graph: BipartiteGraph[TLeft, TRight, TEdgeValue]) -> 
     if matching:
         yield matching
         graph = graph.__copy__()
-        yield from _enum_maximum_matchings_iter(graph, matching, _DirectedMatchGraph(graph, matching))
+        yield from _enum_maximum_matchings_iter(graph, matching, DirectedMatchGraph(graph, matching))
 
 
 def _enum_maximum_matchings_iter(graph: BipartiteGraph[TLeft, TRight, TEdgeValue], matching: Dict[TLeft, TRight],
-                                 directed_match_graph: _DirectedMatchGraph[TLeft, TRight]) \
+                                 directed_match_graph: DirectedMatchGraph[TLeft, TRight]) \
         -> Iterator[Dict[TLeft, TRight]]:
     # Algorithm described in "Algorithms for Enumerating All Perfect, Maximum and Maximal Matchings in Bipartite Graphs"
     # By Takeaki Uno in "Algorithms and Computation: 8th International Symposium, ISAAC '97 Singapore,
@@ -153,14 +153,14 @@ def _enum_maximum_matchings_iter(graph: BipartiteGraph[TLeft, TRight, TEdgeValue
         # Step 6
         # Construct G+(e) and D(G+(e), M\e)
         graph_plus = graph.without_nodes(edge)
-        directed_match_graph_plus = _DirectedMatchGraph(graph_plus, matching)
+        directed_match_graph_plus = DirectedMatchGraph(graph_plus, matching)
         # Recurse with the old matching M but without the edge e
         yield from _enum_maximum_matchings_iter(graph_plus, matching, directed_match_graph_plus)
 
         # Step 7
         # Construct G-(e) and D(G-(e), M')
         graph_minus = graph.without_edge(edge)
-        directed_match_graph_minus = _DirectedMatchGraph(graph_minus, matching_prime)
+        directed_match_graph_minus = DirectedMatchGraph(graph_minus, matching_prime)
         # Recurse with the new matching M' but without the edge e
         yield from _enum_maximum_matchings_iter(graph_minus, matching_prime, directed_match_graph_minus)
 
@@ -205,8 +205,8 @@ def _enum_maximum_matchings_iter(graph: BipartiteGraph[TLeft, TRight, TEdgeValue
         graph_plus = graph.without_nodes(edge)
         graph_minus = graph.without_edge(edge)
 
-        dgm_plus = _DirectedMatchGraph(graph_plus, matching_prime)
-        dgm_minus = _DirectedMatchGraph(graph_minus, matching)
+        dgm_plus = DirectedMatchGraph(graph_plus, matching_prime)
+        dgm_minus = DirectedMatchGraph(graph_minus, matching)
 
         # Step 9
         yield from _enum_maximum_matchings_iter(graph_plus, matching_prime, dgm_plus)

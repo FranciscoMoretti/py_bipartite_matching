@@ -14,7 +14,7 @@ try:
 except ImportError:
     Digraph = Graph = None
 
-__all__ = ['BipartiteGraph', '_DirectedMatchGraph']
+__all__ = ['BipartiteGraph', 'DirectedMatchGraph']
 
 T = TypeVar('T')
 TLeft = TypeVar('TLeft', bound=Hashable)
@@ -224,9 +224,9 @@ class BipartiteGraph(Generic[TLeft, TRight, TEdgeValue], MutableMapping[Tuple[TL
         return '{}({})'.format(self.__class__.__name__, self._edges)
 
 
-class _DirectedMatchGraph(Dict[Node, NodeSet], Generic[TLeft, TRight]):
+class DirectedMatchGraph(Dict[Node, NodeSet], Generic[TLeft, TRight]):
     def __init__(self, graph: BipartiteGraph[TLeft, TRight, TEdgeValue], matching: Dict[TLeft, TRight]) -> None:
-        super(_DirectedMatchGraph, self).__init__()
+        super(DirectedMatchGraph, self).__init__()
         for (tail, head) in graph:
             if tail in matching and matching[tail] == head:
                 self[(LEFT, tail)] = {(RIGHT, head)}

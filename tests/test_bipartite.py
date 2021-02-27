@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import pytest
 
-from py_bipartite_matching.matching.bipartite import BipartiteGraph, _DirectedMatchGraph
+from py_bipartite_matching.matching.bipartite import BipartiteGraph, DirectedMatchGraph
 
 
 @pytest.mark.parametrize(
@@ -22,7 +22,7 @@ from py_bipartite_matching.matching.bipartite import BipartiteGraph, _DirectedMa
     ]
 )  # yapf: disable
 def test_directed_graph_find_cycle(graph, expected_cycle):
-    dmg = _DirectedMatchGraph({}, {})
+    dmg = DirectedMatchGraph({}, {})
     dmg.update(graph)
     cycle = dmg.find_cycle()
     if len(expected_cycle) > 0:
