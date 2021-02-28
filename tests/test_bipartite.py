@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 import pytest
 
-from py_bipartite_matching.matching.bipartite import BipartiteGraph, DirectedMatchGraph
+from py_bipartite_matching.matching.bipartite import BipartiteGraph, DirectedMatchGraph, directed_bipartite_matching_graph
 from py_bipartite_matching.matching.cycles import find_cycle
-from py_bipartite_matching.matching.graphs_utils import digraph_from_adjacency_list, invert_name_and_id
+from py_bipartite_matching.matching.graphs_utils import digraph_from_adjacency_list, graph_to_adjacency_list, graph_from_adjacency_list, invert_name_and_id
 from pygraph.classes.directed_graph import DirectedGraph
+from pygraph.classes.undirected_graph import UndirectedGraph
 
 @pytest.mark.parametrize(
     '   graph,                      expected_cycle',
@@ -61,6 +62,26 @@ def test_pygraph_digraph_find_cycle(graph, expected_cycle):
         start = cycle_names.index(expected_cycle[0])
         cycle_names = cycle_names[start:] + cycle_names[:start]
     assert cycle_names == expected_cycle
+
+
+@pytest.mark.parametrize(
+    '   matching,               expected_digraph',
+    [
+        ({},                    {1: set(), 2: {1, 5}, 3: set(), 4: {1}, 5: set(), 6: set(), 7: set()}),
+        ({1: {2}},                {1: {2}, 2: {5}, 3: set(), 4: {1}, 5:set(), 6: set(), 7: set()}),
+        ({1: {2}, 5: {2}},          {1: {2}, 2: set(), 3: set(), 4: {1}, 5: {2}, 6: set(), 7: set()}),
+        ({1: {2, 4}},          {1: {2, 4}, 2: {5}, 3: set(), 4: set(), 5: set(), 6: set(), 7: set()})
+    ]
+)  # yapf: disable
+def test_directed_bipartite_matching_graph(matching, expected_digraph):
+    # Build the test graph
+    undirected_graph, mapping = graph_from_adjacency_list({1: {2}, 2: {}, 3: {}, 4: {1}, 5: {2}, 6: {}, 7: {}})
+    digraph = directed_bipartite_matching_graph(
+        graph=undirected_graph,
+        left_nodes=set([1, 5]),
+        matching=matching)
+    adjacency_result = graph_to_adjacency_list(digraph)
+    assert adjacency_result == expected_digraph
 
 
 class TestBipartiteGraphTest:

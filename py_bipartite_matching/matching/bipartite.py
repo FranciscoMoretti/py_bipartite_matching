@@ -8,6 +8,8 @@ The `BipartiteGraph` class is used to represent a bipartite graph as a dictionar
 from typing import (Dict, Generic, Hashable, Iterator, List, Set, Tuple, TypeVar, Union, cast, MutableMapping)
 
 from py_bipartite_matching.matching.hopcroft_karp import HopcroftKarp
+from pygraph.classes.directed_graph import DirectedGraph
+from pygraph.classes.undirected_graph import UndirectedGraph
 
 try:
     from graphviz import Digraph, Graph
@@ -292,3 +294,19 @@ class DirectedMatchGraph(Dict[Node, NodeSet], Generic[TLeft, TRight]):
 
         return cast(NodeList, [])
 
+
+def directed_bipartite_matching_graph(graph: UndirectedGraph, left_nodes: set, matching: dict) -> DirectedGraph:
+    directed_graph = DirectedGraph()
+    # Create a new node from each node on the undirected graph
+    for _ in range(graph.num_nodes()):
+        # Don't save the id. It should be the same on both because they have the
+        # same generating function
+        directed_graph.new_node()
+    
+    for left_node in left_nodes:
+        for right_node in graph.neighbors(left_node):
+            if left_node in matching.keys() and right_node in matching[left_node]:
+                directed_graph.new_edge(left_node, right_node)
+            else:
+                directed_graph.new_edge(right_node, left_node)
+    return directed_graph
