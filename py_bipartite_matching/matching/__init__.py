@@ -2,6 +2,7 @@
 """Contains various patter matching algorithms in the submodules."""
 
 from . import bipartite
+from . import cycles
 from . import graphs_utils
 from . import hopcroft_karp
 from . import takeaki
