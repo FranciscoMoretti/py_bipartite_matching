@@ -1,14 +1,14 @@
 # Algorithms to find cycles in a graph 
 
-def find_cycle(graph):
+def find_cycle(graph, directed=True):
     visited = set()
     for n in graph.get_all_node_ids():
-        cycle = _find_cycle(graph, n, [], visited)
+        cycle = _find_cycle(graph, n, [], visited, directed)
         if cycle:
             return cycle
     return []
 
-def _find_cycle(graph, node, path, visited):
+def _find_cycle(graph, node, path, visited, directed):
     if node in visited:
         try:
             index = path.index(node)
@@ -22,7 +22,10 @@ def _find_cycle(graph, node, path, visited):
         return []
 
     for other in graph.neighbors(node):
-        cycle = _find_cycle(graph, other, path + [node], visited)
+        if not directed:
+            if other == node or (len(path) > 0 and other == path[-1]):
+                continue
+        cycle = _find_cycle(graph, other, path + [node], visited, directed)
         if cycle:
             return cycle
 
