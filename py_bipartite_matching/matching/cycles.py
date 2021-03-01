@@ -1,4 +1,4 @@
-# Algorithms to find cycles in a graph 
+# Algorithms to find cycle in a graph 
 
 def find_cycle(graph, directed=True):
     visited = set()

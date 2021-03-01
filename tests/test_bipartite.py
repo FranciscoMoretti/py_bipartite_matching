@@ -2,7 +2,7 @@
 import pytest
 
 from py_bipartite_matching.matching.bipartite import BipartiteGraph, DirectedMatchGraph, directed_bipartite_matching_graph
-from py_bipartite_matching.matching.cycles import find_cycle
+from py_bipartite_matching.matching.cycle import find_cycle
 from py_bipartite_matching.matching.graphs_utils import digraph_from_adjacency_list, graph_to_adjacency_list, graph_from_adjacency_list, invert_name_and_id
 from pygraph.classes.directed_graph import DirectedGraph
 from pygraph.classes.undirected_graph import UndirectedGraph
