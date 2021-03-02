@@ -33,6 +33,10 @@ def graph_to_adjacency_list(digraph):
 def invert_name_and_id(name_and_id_relation):
  return{v: k for k, v in name_and_id_relation.items()}
 
+def convert_adjacency_list_name_and_id(adjacency_list, name_and_id):
+    return {name_and_id[k]:set(
+        name_and_id[_v] for _v in v
+    ) for k, v in adjacency_list.items()}
  
 def convert_graph_directed_to_undirected(dg):
     """Converts a directed graph into an undirected graph. Directed edges are made undirected."""
