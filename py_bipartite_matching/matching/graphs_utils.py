@@ -54,7 +54,7 @@ def convert_graph_directed_to_undirected(dg):
         target_node_id = edge['vertices'][1]
         target_node = udg.get_node(target_node_id)
         target_node['edges'].append(edge_id)
-        udg.num_edges = len(udg.get_all_edge_ids())
+    udg.num_edges = len(udg.get_all_edge_ids())
 
     return udg
 
