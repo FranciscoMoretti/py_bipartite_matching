@@ -2,6 +2,7 @@
 import copy
 from pygraph.classes.directed_graph import DirectedGraph
 from pygraph.classes.undirected_graph import UndirectedGraph
+from pygraph.helpers.functions import convert_graph_directed_to_undirected
 
 def digraph_from_adjacency_list(adjacency_graph):
     digraph = DirectedGraph()
@@ -37,30 +38,6 @@ def convert_adjacency_list_name_and_id(adjacency_list, name_and_id):
     return {name_and_id[k]:set(
         name_and_id[_v] for _v in v
     ) for k, v in adjacency_list.items()}
- 
-def convert_graph_directed_to_undirected(dg):
-    """Converts a directed graph into an undirected graph. Directed edges are made undirected."""
-
-    udg = UndirectedGraph()
-
-    # Copy the graph
-    # --Copy nodes
-    # --Copy edges
-    udg.nodes = copy.deepcopy(dg.nodes)
-    udg.edges = copy.deepcopy(dg.edges)
-    udg.next_node_id = dg.next_node_id
-    udg.next_edge_id = dg.next_edge_id
-    udg.num_nodes = dg.num_nodes
-
-    # Convert the directed edges into undirected edges
-    for edge_id in udg.get_all_edge_ids():
-        edge = udg.get_edge(edge_id)
-        target_node_id = edge['vertices'][1]
-        target_node = udg.get_node(target_node_id)
-        target_node['edges'].append(edge_id)
-    udg.num_edges = len(udg.get_all_edge_ids())
-
-    return udg
 
 def graph_without_nodes_of_edge(graph, edge_id):
     """Returns a copy of this bipartite graph with the given edge and its adjacent nodes removed."""
