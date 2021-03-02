@@ -57,3 +57,17 @@ def convert_graph_directed_to_undirected(dg):
         udg.num_edges = len(udg.get_all_edge_ids())
 
     return udg
+
+def graph_without_nodes_of_edge(graph, edge_id):
+    """Returns a copy of this bipartite graph with the given edge and its adjacent nodes removed."""
+    new_graph = copy.deepcopy(graph)
+    edge_object = new_graph.get_edge(edge_id)
+    new_graph.delete_node(edge_object['vertices'][0])
+    new_graph.delete_node(edge_object['vertices'][1])
+    return new_graph
+
+def graph_without_edge(graph, edge_id):
+    """Returns a copy of this bipartite graph with the given edge removed."""
+    new_graph = copy.deepcopy(graph)
+    new_graph.delete_edge_by_id(edge_id)
+    return new_graph
