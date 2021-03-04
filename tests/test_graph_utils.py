@@ -27,7 +27,7 @@ from py_bipartite_matching.matching.graphs_utils import (
         ({0: {2}, 1: {2}, 2: {0}},  [1, 2]                , {0: set()})
     ]
 )  # yapf: disable
-def test_graph_without_nodes_of_edge(graph, edge, expected_graph):
+def test_digraph_without_nodes_of_edge(graph, edge, expected_graph):
     digraph, name_to_id = digraph_from_adjacency_list(graph)
     id_to_name = invert_name_and_id(name_to_id)
     edge_id = digraph.get_first_edge_id_by_node_ids(
@@ -52,7 +52,7 @@ def test_graph_without_nodes_of_edge(graph, edge, expected_graph):
         ({0: {2}, 1: {2}, 2: {0}},  [1, 2]                , {0: {2}, 1: set(), 2: {0}})
     ]
 )  # yapf: disable
-def test_graph_without_edge(graph, edge, expected_graph):
+def test_digraph_without_edge(graph, edge, expected_graph):
     digraph, name_to_id = digraph_from_adjacency_list(graph)
     id_to_name = invert_name_and_id(name_to_id)
     edge_id = digraph.get_first_edge_id_by_node_ids(
