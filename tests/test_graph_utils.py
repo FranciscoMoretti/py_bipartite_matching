@@ -62,3 +62,29 @@ def test_digraph_without_edge(graph, edge, expected_graph):
     result_adjacency = graph_to_adjacency_list(new_digraph)
     translated_adjacency = convert_adjacency_list_name_and_id(result_adjacency, id_to_name)
     assert translated_adjacency == expected_graph
+
+@pytest.mark.parametrize(
+    '   graph,                     edge,    expected_graph',
+    [
+        ({0: {1}},                  [0, 1]                , {}),
+        ({0: {1}, 1: {2}},          [0, 1]                , {2: set()}),
+        ({0: {1}, 1: {0}},          [0, 1]                , {}),
+        ({0: {1}, 1: {0, 2}},       [1, 2]                , {0: set()}),
+        ({0: {1, 2}, 1: {0, 2}},    [0, 1]                , {2: set()}),
+        ({0: {1, 2}, 1: {0}},       [0, 1]                , {2: set()}),
+        ({0: {1}, 1: {2}, 2: {0}},  [0, 1]                , {2: set()}),
+        ({0: {2}, 1: {2}},          [0, 2]                , {1: set()}),
+        ({0: {2}, 1: {2}, 2: {0}},  [1, 2]                , {0: set()})
+    ]
+)  # yapf: disable
+def test_graph_without_nodes_of_edge(graph, edge, expected_graph):
+    graph, name_to_id = graph_from_adjacency_list(graph)
+    id_to_name = invert_name_and_id(name_to_id)
+    edge_id = graph.get_first_edge_id_by_node_ids(
+        name_to_id[edge[0]],
+        name_to_id[edge[1]])
+    new_graph = graph_without_nodes_of_edge(graph, edge_id)
+    result_adjacency = graph_to_adjacency_list(new_graph)
+    translated_adjacency = convert_adjacency_list_name_and_id(result_adjacency, id_to_name)
+    assert translated_adjacency == expected_graph
+
