@@ -5,7 +5,7 @@ from py_bipartite_matching.matching.cycle import find_cycle
 from py_bipartite_matching.matching.graphs_utils import digraph_from_adjacency_list, graph_from_adjacency_list, invert_name_and_id
 
 @pytest.mark.parametrize(
-    '   graph,                      expected_cycle',
+    '   digraph_adjacency_list,     expected_cycle',
     [
         ({},                        []),
         ({0: {1}},                  []),
@@ -21,8 +21,8 @@ from py_bipartite_matching.matching.graphs_utils import digraph_from_adjacency_l
         ({0: {2}, 1: {2}, 2: {1}},  [1, 2]),
     ]
 )  # yapf: disable
-def test_pygraph_digraph_find_cycle(graph, expected_cycle):
-    digraph, name_to_id = digraph_from_adjacency_list(graph)
+def test_pygraph_digraph_find_cycle(digraph_adjacency_list, expected_cycle):
+    digraph, name_to_id = digraph_from_adjacency_list(digraph_adjacency_list)
     id_to_name = invert_name_and_id(name_to_id)
     cycle_ids = find_cycle(digraph)
     cycle_names = [id_to_name[id] for id in cycle_ids]
@@ -35,7 +35,7 @@ def test_pygraph_digraph_find_cycle(graph, expected_cycle):
 
 
 @pytest.mark.parametrize(
-    '   graph,                             expected_cycle',
+    '   graph_adjacency_list,               expected_cycle',
     [
         ({},                               []),
         ({0: {1}},                         []),
@@ -53,10 +53,10 @@ def test_pygraph_digraph_find_cycle(graph, expected_cycle):
         ({0: {2}, 1: {2}, 2: {1}},         []),
     ]
 )  # yapf: disable
-def test_pygraph_graph_find_cycle(graph, expected_cycle):
-    digraph, name_to_id = graph_from_adjacency_list(graph)
+def test_pygraph_graph_find_cycle(graph_adjacency_list, expected_cycle):
+    graph, name_to_id = graph_from_adjacency_list(graph_adjacency_list)
     id_to_name = invert_name_and_id(name_to_id)
-    cycle_ids = find_cycle(digraph, directed=False)
+    cycle_ids = find_cycle(graph, directed=False)
     cycle_names = [id_to_name[id] for id in cycle_ids]
     if len(expected_cycle) > 0:
         assert expected_cycle[0] in cycle_names
