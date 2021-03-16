@@ -1,5 +1,6 @@
 # utils for graphs of the PyGraph library 
 import copy
+import networkx as nx
 from pygraph.classes.directed_graph import DirectedGraph
 from pygraph.classes.undirected_graph import UndirectedGraph
 from pygraph.helpers.functions import convert_graph_directed_to_undirected
@@ -51,4 +52,17 @@ def graph_without_edge(graph, edge_id):
     """Returns a copy of this bipartite graph with the given edge removed."""
     new_graph = copy.deepcopy(graph)
     new_graph.delete_edge_by_id(edge_id)
+    return new_graph
+
+def networkx_graph_without_nodes_of_edge(graph, edge):
+    """Returns a copy of this bipartite graph with the given edge and its adjacent nodes removed."""
+    new_graph  = graph.copy()
+    new_graph.remove_node(edge[0])
+    new_graph.remove_node(edge[1])
+    return new_graph
+
+def networkx_graph_without_edge(graph, edge):
+    """Returns a copy of this bipartite graph with the given edge removed."""
+    new_graph  = graph.copy()
+    new_graph.remove_edge(*edge)
     return new_graph
