@@ -123,7 +123,7 @@ def _enum_perfect_matchings_iter_networkx(graph: BipartiteGraph[TLeft, TRight, T
     yield from _enum_perfect_matchings_iter_networkx(graph_minus, matching_prime)
 
 
-def enum_maximum_matchings_networkx(graph: BipartiteGraph[TLeft, TRight, TEdgeValue]) -> Iterator[Dict[TLeft, TRight]]:
+def enum_maximum_matchings_networkx(graph: nx.Graph) -> Iterator[dict]:
     matching = maximum_matching(graph, top_nodes=graph.graph['top'])
     if matching:
         yield matching
@@ -131,9 +131,9 @@ def enum_maximum_matchings_networkx(graph: BipartiteGraph[TLeft, TRight, TEdgeVa
         yield from _enum_maximum_matchings_iter_networkx(graph, matching, DirectedMatchGraph(graph, matching))
 
 
-def _enum_maximum_matchings_iter_networkx(graph: BipartiteGraph[TLeft, TRight, TEdgeValue], matching: Dict[TLeft, TRight],
-                                 directed_match_graph: DirectedMatchGraph[TLeft, TRight]) \
-        -> Iterator[Dict[TLeft, TRight]]:
+def _enum_maximum_matchings_iter_networkx(graph: nx.Graph, matching: dict,
+                                          directed_match_graph: nx.DiGraph) \
+        -> Iterator[dict]:
     # Algorithm described in "Algorithms for Enumerating All Perfect, Maximum and Maximal Matchings in Bipartite Graphs"
     # By Takeaki Uno in "Algorithms and Computation: 8th International Symposium, ISAAC '97 Singapore,
     # December 17-19, 1997 Proceedings"
