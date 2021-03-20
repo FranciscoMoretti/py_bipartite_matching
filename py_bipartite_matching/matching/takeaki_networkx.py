@@ -131,10 +131,14 @@ def _enum_perfect_matchings_iter_networkx(graph: BipartiteGraph[TLeft, TRight, T
 
 def enum_maximum_matchings_networkx(graph: nx.Graph) -> Iterator[dict]:
     matching = maximum_matching(graph, top_nodes=graph.graph['top'])
+    # Express the matching only from a top node to a bottom node
+    matching = {k: v for k, v in matching.items() if k in graph.graph['top']}
     if matching:
         yield matching
-        graph = graph.__copy__()
-        yield from _enum_maximum_matchings_iter_networkx(graph, matching, DirectedMatchGraph(graph, matching))
+        yield from _enum_maximum_matchings_iter_networkx(
+            graph=copy.deepcopy(graph),
+            matching=matching,
+            directed_match_graph=create_directed_matching_graph(graph, graph.graph['top'], matching))
 
 
 def _enum_maximum_matchings_iter_networkx(graph: nx.Graph, matching: dict,
