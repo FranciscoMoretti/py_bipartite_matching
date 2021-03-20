@@ -150,24 +150,31 @@ def _enum_maximum_matchings_iter_networkx(graph: nx.Graph, matching: dict,
     # See http://dx.doi.org/10.1007/3-540-63890-3_11
 
     # Step 1
-    if len(graph) == 0:
+    if len(graph.nodes) == 0:
         return
 
     # Step 2
     # Find a cycle in the directed matching graph
     # Note that this cycle alternates between nodes from the left and the right part of the graph
-    raw_cycle = directed_match_graph.find_cycle()
+    try:
+        raw_cycle = nx.find_cycle(directed_match_graph)
+        assert len(raw_cycle) > 3
+    except nx.exception.NetworkXNoCycle:
+        raw_cycle = None
+
 
     if raw_cycle:
         # Make sure the cycle "starts"" in the the left part
         # If not, start the cycle from the second node, which is in the left part
-        if raw_cycle[0][0] != LEFT:
+        if directed_match_graph.nodes[raw_cycle[0][0]]['bipartite'] == LEFT:
             cycle = tuple([raw_cycle[-1][1]] + list(x[1] for x in raw_cycle[:-1]))
         else:
             cycle = tuple(x[1] for x in raw_cycle)
+        assert directed_match_graph.nodes[cycle[0]]['bipartite'] == LEFT
+        # left0, right0, left1, right1
 
         # Step 3 - TODO: Properly find right edge? (to get complexity bound)
-        edge = cast(Edge, cycle[:2])
+        edge = tuple(cycle[:2])
 
         # Step 4
         # already done because we are not really finding the optimal edge
@@ -178,20 +185,21 @@ def _enum_maximum_matchings_iter_networkx(graph: nx.Graph, matching: dict,
         matching_prime = matching.copy()
         for i in range(0, len(cycle), 2):
             matching_prime[cycle[i]] = cycle[i - 1]  # type: ignore
-
+    
+        assert matching_prime != matching
         yield matching_prime
 
         # Step 6
         # Construct G+(e) and D(G+(e), M\e)
-        graph_plus = graph.without_nodes(edge)
-        directed_match_graph_plus = DirectedMatchGraph(graph_plus, matching)
+        graph_plus = networkx_graph_without_nodes_of_edge(graph, edge)
+        directed_match_graph_plus = create_directed_matching_graph(graph_plus, graph_plus.graph['top'], matching)
         # Recurse with the old matching M but without the edge e
         yield from _enum_maximum_matchings_iter_networkx(graph_plus, matching, directed_match_graph_plus)
 
         # Step 7
         # Construct G-(e) and D(G-(e), M')
-        graph_minus = graph.without_edge(edge)
-        directed_match_graph_minus = DirectedMatchGraph(graph_minus, matching_prime)
+        graph_minus = networkx_graph_without_edge(graph, edge)
+        directed_match_graph_minus = create_directed_matching_graph(graph_minus, graph_minus.graph['top'], matching_prime)
         # Recurse with the new matching M' but without the edge e
         yield from _enum_maximum_matchings_iter_networkx(graph_minus, matching_prime, directed_match_graph_minus)
 
