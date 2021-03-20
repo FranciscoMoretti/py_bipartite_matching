@@ -30,8 +30,21 @@ from py_bipartite_matching.matching.bipartite import (
     RIGHT
 )
 
-__all__ = ['enum_perfect_matchings_networkx', 'enum_maximum_matchings_networkx'] 
+__all__ = ['enum_perfect_matchings_networkx', 'enum_maximum_matchings_networkx', 'create_directed_matching_graph'] 
 
+
+def create_directed_matching_graph(graph: nx.Graph, top_nodes: set, matching: dict) -> nx.DiGraph:
+    # creates a directed copy of the graph with all edges on both directions
+    directed_graph = nx.DiGraph()
+    directed_graph.add_nodes_from(graph.nodes(data=True))
+    
+    for top_node in top_nodes:
+        for bottom_node in graph.adj[top_node]:
+            if top_node in matching.keys() and bottom_node in matching[top_node]:
+                directed_graph.add_edge(top_node, bottom_node)
+            else:
+                directed_graph.add_edge(bottom_node, top_node)
+    return directed_graph
 
 def enum_perfect_matchings_networkx(graph: nx.Graph) -> Iterator[Dict[TLeft, TRight]]:
     if len(graph._left) != len(graph._right):

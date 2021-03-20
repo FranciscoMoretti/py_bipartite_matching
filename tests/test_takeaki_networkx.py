@@ -7,9 +7,10 @@ from hypothesis import example, given
 import pytest
 
 from py_bipartite_matching.matching.bipartite import BipartiteGraph
-from py_bipartite_matching.matching.takeaki_networkx import enum_perfect_matchings_networkx, enum_maximum_matchings_networkx
+from py_bipartite_matching.matching.takeaki_networkx import enum_perfect_matchings_networkx, enum_maximum_matchings_networkx, create_directed_matching_graph
 
 from py_bipartite_matching.matching.networkx_biparite_sample import davis_southern_women_graph
+from networkx.algorithms.bipartite.matching import maximum_matching
 
 @st.composite
 def bipartite_graph(draw):
@@ -64,3 +65,11 @@ def test_completeness_networkx(n, m):
     count = sum(1 for _ in enum_maximum_matchings(graph))
     expected_count = m > 0 and math.factorial(n) / math.factorial(n - m) or 0
     assert count == expected_count
+
+
+def test_create_directed_matching_graph():
+    graph =  davis_southern_women_graph()
+    matching = maximum_matching(G=graph, top_nodes=graph.graph['top'])
+    digraph = create_directed_matching_graph(graph=graph, top_nodes=graph.graph['top'], matching=matching)
+    assert graph.nodes == digraph.nodes
+    assert len(graph.edges) == len(digraph.edges)
