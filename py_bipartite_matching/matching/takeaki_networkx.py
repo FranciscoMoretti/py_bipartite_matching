@@ -35,15 +35,21 @@ __all__ = ['enum_perfect_matchings_networkx', 'enum_maximum_matchings_networkx',
 
 def create_directed_matching_graph(graph: nx.Graph, top_nodes: set, matching: dict) -> nx.DiGraph:
     # creates a directed copy of the graph with all edges on both directions
-    directed_graph = nx.DiGraph()
-    directed_graph.add_nodes_from(graph.nodes(data=True))
-    
+    directed_graph = graph.to_directed()
+
     for top_node in top_nodes:
         for bottom_node in graph.adj[top_node]:
             if top_node in matching.keys() and bottom_node in matching[top_node]:
-                directed_graph.add_edge(top_node, bottom_node)
+                directed_graph.remove_edge(bottom_node, top_node)
             else:
-                directed_graph.add_edge(bottom_node, top_node)
+                directed_graph.remove_edge(top_node, bottom_node)
+    # check for duplicated (should not exist any)
+    ordered_edges = [tuple(sorted(e)) for e in directed_graph.edges]
+    assert len(ordered_edges) == len(set(ordered_edges))
+
+    assert len(graph.edges) == len(directed_graph.edges) 
+    assert len(graph.nodes) == len(directed_graph.nodes) 
+
     return directed_graph
 
 def enum_perfect_matchings_networkx(graph: nx.Graph) -> Iterator[Dict[TLeft, TRight]]:
