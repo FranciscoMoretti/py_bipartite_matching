@@ -11,18 +11,23 @@ from py_bipartite_matching.matching.takeaki_networkx import enum_perfect_matchin
 
 from py_bipartite_matching.matching.networkx_biparite_sample import davis_southern_women_graph
 from networkx.algorithms.bipartite.matching import maximum_matching
+import networkx as nx
 
 @st.composite
 def bipartite_graph(draw):
     m = draw(st.integers(min_value=1, max_value=4))
     n = draw(st.integers(min_value=1, max_value=5))
+    top_nodes = list(range(m))
+    bottom_nodes = list(range(10, 10+n))
 
-    graph = BipartiteGraph()
-    for i in range(n):
-        for j in range(m):
-            b = draw(st.booleans())
-            if b:
-                graph[i, j] = b
+    graph = nx.Graph()
+    graph.add_nodes_from(top_nodes, bipartite=0)
+    graph.graph["top"] = top_nodes
+    graph.add_nodes_from(bottom_nodes, bipartite=1)
+    graph.graph["bottom"] = bottom_nodes
+    for i in top_nodes:
+        for j in bottom_nodes:
+            graph.add_edge(i, j)
 
     return graph
 
