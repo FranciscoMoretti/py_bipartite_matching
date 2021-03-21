@@ -27,7 +27,8 @@ def bipartite_graph(draw):
     graph.graph["bottom"] = bottom_nodes
     for i in top_nodes:
         for j in bottom_nodes:
-            graph.add_edge(i, j)
+            if draw(st.booleans()):
+                graph.add_edge(i, j)
 
     return graph
 
