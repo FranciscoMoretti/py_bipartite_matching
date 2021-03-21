@@ -46,11 +46,8 @@ def test_enum_perfect_matchings_correctness_networkx(graph):
         matchings.add(frozen_matching)
 
 
-# @given(bipartite_graph())
-# def test_enum_perfect_matchings_correctness_networkx(graph):
-def test_enum_maximum_matchings_correctness_networkx():
-    graph =  davis_southern_women_graph()
-
+@given(bipartite_graph())
+def test_enum_maximum_matchings_correctness_networkx(graph):
     size = None
     matchings = set()
     for matching in enum_maximum_matchings_networkx(graph):
