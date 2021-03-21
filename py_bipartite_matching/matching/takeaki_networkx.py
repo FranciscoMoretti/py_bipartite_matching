@@ -7,6 +7,7 @@ The function `enum_maximum_matchings` can be used to enumerate all maximum match
 """
 from typing import (Dict, Generic, Hashable, Iterator, List, Set, Tuple, TypeVar, Union, cast, MutableMapping)
 
+import copy
 import networkx as nx
 from networkx.algorithms.bipartite.matching import maximum_matching
 
