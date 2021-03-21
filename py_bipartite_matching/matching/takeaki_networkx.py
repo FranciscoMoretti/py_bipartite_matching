@@ -40,7 +40,7 @@ def create_directed_matching_graph(graph: nx.Graph, top_nodes: set, matching: di
 
     for top_node in top_nodes:
         for bottom_node in graph.adj[top_node]:
-            if top_node in matching.keys() and bottom_node in matching[top_node]:
+            if top_node in matching.keys() and bottom_node == matching[top_node]:
                 directed_graph.remove_edge(bottom_node, top_node)
             else:
                 directed_graph.remove_edge(top_node, bottom_node)
