@@ -63,10 +63,20 @@ def test_enum_maximum_matchings_correctness_networkx(graph):
 
 
 @pytest.mark.parametrize('n, m', filter(lambda x: x[0] >= x[1], itertools.product(range(1, 6), range(0, 4))))
-def test_completeness_networkx(n, m):
-    graph = BipartiteGraph(map(lambda x: (x, True), itertools.product(range(n), range(m))))
-    count = sum(1 for _ in enum_maximum_matchings(graph))
-    expected_count = m > 0 and math.factorial(n) / math.factorial(n - m) or 0
+def test_maximum_matchings_completeness_networkx(n, m):
+    top_nodes = list(range(n))
+    bottom_nodes = list(range(10, 10+m))
+    edges = itertools.product(top_nodes, bottom_nodes)
+    # create the graph
+    graph = nx.Graph()
+    graph.add_nodes_from(top_nodes, bipartite=0)
+    graph.graph["top"] = top_nodes
+    graph.add_nodes_from(bottom_nodes, bipartite=1)
+    graph.graph["bottom"] = bottom_nodes
+    graph.add_edges_from(edges)
+
+    count = sum(1 for _ in enum_maximum_matchings_networkx(graph))
+    expected_count = m > 0 and int(math.factorial(n) / math.factorial(n - m)) or 0
     assert count == expected_count
 
 
