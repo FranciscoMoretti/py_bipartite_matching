@@ -151,7 +151,7 @@ def _enum_maximum_matchings_iter_networkx(graph: nx.Graph, matching: dict,
     # See http://dx.doi.org/10.1007/3-540-63890-3_11
 
     # Step 1
-    if len(graph.nodes) == 0:
+    if len(graph.edges) == 0:
         return
 
     # Step 2
