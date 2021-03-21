@@ -215,14 +215,14 @@ def _enum_maximum_matchings_iter_networkx(graph: nx.Graph, matching: dict,
         left2 = None  # type: TLeft
         right = None  # type: TRight
 
-        for part1, node1 in directed_match_graph:
-            if part1 == LEFT and node1 in matching:
-                left1 = cast(TLeft, node1)
+        for node1 in directed_match_graph.nodes:
+            if directed_match_graph.nodes[node1]['bipartite'] == LEFT and node1 in matching.keys():
+                left1 = node1
                 right = matching[left1]
-                if (RIGHT, right) in directed_match_graph:
-                    for _, node2 in directed_match_graph[(RIGHT, right)]:
+                if right in directed_match_graph.nodes:
+                    for node2 in directed_match_graph.neighbors(right):
                         if node2 not in matching:
-                            left2 = cast(TLeft, node2)
+                            left2 = node2
                             break
                     if left2 is not None:
                         break
@@ -237,16 +237,17 @@ def _enum_maximum_matchings_iter_networkx(graph: nx.Graph, matching: dict,
         del matching_prime[left1]
         matching_prime[left2] = right
 
+        assert matching_prime != matching
         yield matching_prime
 
         edge = (left2, right)
 
         # Construct G+(e) and G-(e)
-        graph_plus = graph.without_nodes(edge)
-        graph_minus = graph.without_edge(edge)
+        graph_plus = networkx_graph_without_nodes_of_edge(graph, edge)
+        graph_minus = networkx_graph_without_edge(graph, edge)
 
-        dgm_plus = DirectedMatchGraph(graph_plus, matching_prime)
-        dgm_minus = DirectedMatchGraph(graph_minus, matching)
+        dgm_plus = create_directed_matching_graph(graph_plus, graph_plus.graph['top'], matching_prime)
+        dgm_minus = create_directed_matching_graph(graph_minus, graph_minus.graph['top'], matching)
 
         # Step 9
         yield from _enum_maximum_matchings_iter_networkx(graph_plus, matching_prime, dgm_plus)
