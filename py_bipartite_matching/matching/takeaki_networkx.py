@@ -184,21 +184,22 @@ def _enum_maximum_matchings_iter_networkx(graph: nx.Graph, matching: dict,
     # Find a cycle in the directed matching graph
     # Note that this cycle alternates between nodes from the left and the right part of the graph
     try:
-        raw_cycle = nx.find_cycle(directed_match_graph)
-        assert len(raw_cycle) > 3
+        # raw_cycle = nx.find_cycle(directed_match_graph)
+        raw_cycle = find_cycle_with_edge_of_matching(graph=directed_match_graph, matching=matching)
     except nx.exception.NetworkXNoCycle:
         raw_cycle = None
-
 
     if raw_cycle:
         # Make sure the cycle "starts"" in the the left part
         # If not, start the cycle from the second node, which is in the left part
-        if directed_match_graph.nodes[raw_cycle[0][0]]['bipartite'] == LEFT:
-            cycle = tuple([raw_cycle[-1][1]] + list(x[1] for x in raw_cycle[:-1]))
+
+        # Make sure the cycle "starts"" in the the left part
+        # If not, start the cycle from the second node, which is in the left part
+        if directed_match_graph.nodes[raw_cycle[0]]['bipartite'] == LEFT:
+            cycle = tuple(raw_cycle[:])
         else:
-            cycle = tuple(x[1] for x in raw_cycle)
+            cycle = tuple(raw_cycle[-1:] + raw_cycle[:-1])
         assert directed_match_graph.nodes[cycle[0]]['bipartite'] == LEFT
-        # left0, right0, left1, right1
 
         # Step 3 - TODO: Properly find right edge? (to get complexity bound)
         edge = tuple(cycle[:2])
