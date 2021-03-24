@@ -95,7 +95,9 @@ def test_perfect_matchings_completeness_networkx(n):
     graph.graph["bottom"] = bottom_nodes
     graph.add_edges_from(edges)
 
-    count = sum(1 for _ in enum_perfect_matchings_networkx(graph))
+    matchings = {frozenset(matching.items()) for matching in \
+        enum_perfect_matchings_networkx(graph)}
+    count = len(matchings)
     expected_count = int(math.factorial(n))
     assert count == expected_count
 
@@ -112,7 +114,9 @@ def test_maximum_matchings_completeness_networkx(n, m):
     graph.graph["bottom"] = bottom_nodes
     graph.add_edges_from(edges)
 
-    count = sum(1 for _ in enum_maximum_matchings_networkx(graph))
+    matchings = {frozenset(matching.items()) for matching in \
+        enum_maximum_matchings_networkx(graph)}
+    count = len(matchings)
     expected_count = m > 0 and int(math.factorial(n) / math.factorial(n - m)) or 0
     assert count == expected_count
 
