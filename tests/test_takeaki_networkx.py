@@ -32,8 +32,26 @@ def bipartite_graph(draw):
 
     return graph
 
-@given(bipartite_graph())
-@example(BipartiteGraph({(0, 2): True, (1, 0): True, (1, 1): True, (2, 0): True, (2, 1): True, (2, 2): True}))
+@st.composite
+def balanced_bipartite_graph(draw):
+    # For a perfect matching to exist the bipartite graph must have the same
+    # the same number of vertex on each partition
+    n = draw(st.integers(min_value=1, max_value=6))
+    top_nodes = list(range(n))
+    bottom_nodes = list(range(10, 10+n))
+
+    graph = nx.Graph()
+    graph.add_nodes_from(top_nodes, bipartite=0)
+    graph.graph["top"] = top_nodes
+    graph.add_nodes_from(bottom_nodes, bipartite=1)
+    graph.graph["bottom"] = bottom_nodes
+    for i in top_nodes:
+        for j in bottom_nodes:
+            if draw(st.booleans()):
+                graph.add_edge(i, j)
+
+    return graph
+
 def test_enum_perfect_matchings_correctness_networkx(graph):
     graph =  davis_southern_women_graph()
     size = len(graph._left) # should be equal to graph.right as well
