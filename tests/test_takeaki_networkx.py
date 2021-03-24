@@ -63,6 +63,7 @@ def balanced_bipartite_graph(draw):
 
 @given(balanced_bipartite_graph())
 def test_enum_perfect_matchings_correctness_networkx(graph):
+    print(f"Testing enum_perfect_matchings_correctness")
     if len(graph.graph['top']) != len(graph.graph['bottom']):
         pass
 
@@ -79,6 +80,7 @@ def test_enum_perfect_matchings_correctness_networkx(graph):
 
 @given(bipartite_graph())
 def test_enum_maximum_matchings_correctness_networkx(graph):
+    print(f"Testing enum_maximum_matchings_correctness")
     size = None
     matchings = set()
     for matching in enum_maximum_matchings_networkx(graph):
@@ -94,6 +96,7 @@ def test_enum_maximum_matchings_correctness_networkx(graph):
 
 @pytest.mark.parametrize('n', range(1, 6))
 def test_perfect_matchings_completeness_networkx(n):
+    print(f"Testing perfect_matchings_completeness")
     top_nodes = list(range(n))
     bottom_nodes = list(range(10, 10+n))
     edges = itertools.product(top_nodes, bottom_nodes)
@@ -114,6 +117,7 @@ def test_perfect_matchings_completeness_networkx(n):
 
 @pytest.mark.parametrize('n, m', filter(lambda x: x[0] >= x[1], itertools.product(range(1, 6), range(0, 4))))
 def test_maximum_matchings_completeness_networkx(n, m):
+    print(f"Testing maximum_matchings_completeness")
     top_nodes = list(range(n))
     bottom_nodes = list(range(10, 10+m))
     edges = itertools.product(top_nodes, bottom_nodes)
