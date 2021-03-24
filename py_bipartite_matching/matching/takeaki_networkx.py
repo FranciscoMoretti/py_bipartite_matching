@@ -10,6 +10,7 @@ from typing import (Dict, Generic, Hashable, Iterator, List, Set, Tuple, TypeVar
 import copy
 import networkx as nx
 from networkx.algorithms.bipartite.matching import maximum_matching
+from networkx.algorithms import shortest_path
 
 from py_bipartite_matching.matching.graphs_utils import (
     networkx_graph_without_edge,
@@ -52,6 +53,26 @@ def create_directed_matching_graph(graph: nx.Graph, top_nodes: set, matching: di
     assert len(graph.nodes) == len(directed_graph.nodes) 
 
     return directed_graph
+
+def find_cycle_with_edge_of_matching(graph, matching):
+    tmp_graph = copy.deepcopy(graph)
+    # Remove the edge so and find a path from a node of the edge to the other one.
+    # If a path is found, the circle is completed with the removed edge
+    for k, v in matching.items():
+        if not tmp_graph.has_edge(k, v):
+            # The graph could have been reduced
+            continue
+        tmp_graph.remove_edge(k, v)
+        try:
+            path = shortest_path(G=tmp_graph, source=v, target=k)
+        except nx.NetworkXNoPath:
+            tmp_graph.add_edge(k, v)
+            continue
+        else:
+            tmp_graph.add_edge(k, v)
+            return path
+    # No cycle was found
+    raise nx.NetworkXNoCycle
 
 def enum_perfect_matchings_networkx(graph: nx.Graph) -> Iterator[Dict[TLeft, TRight]]:
     if len(graph._left) != len(graph._right):
