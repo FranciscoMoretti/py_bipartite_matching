@@ -96,19 +96,16 @@ def _enum_perfect_matchings_iter_networkx(graph: BipartiteGraph[TLeft, TRight, T
     # See http://dx.doi.org/10.1007/3-540-63890-3_11
 
     # Step 1
-    if len(graph) == 0:
+    if len(graph.edges) == 0:
         return
 
     # Find a cycle in the directed matching graph
     # Note that this cycle alternates between nodes from the left and the right part of the graph
 
     # TODO: avoid doing a directed graph by implementing missing algorithm steps from paper
-    directed_match_graph = DirectedMatchGraph(graph, matching)
-    raw_cycle = directed_match_graph.find_cycle()
-
-    # raw_cycle = graph.find_cycle()
-
-    if not raw_cycle:
+    directed_match_graph = create_directed_matching_graph(graph, graph.graph['top'], matching)
+    
+    try:
         return
 
     # Make sure the cycle "starts"" in the the left part
@@ -134,7 +131,7 @@ def _enum_perfect_matchings_iter_networkx(graph: BipartiteGraph[TLeft, TRight, T
     yield matching_prime
 
     # Construct G+(e)
-    graph_plus = graph.without_nodes(edge)
+    graph_plus = networkx_graph_without_nodes_of_edge(graph, edge)
 
     # Step 5
     # TODO: Trim unnecessary edges from G+(e).
@@ -144,7 +141,7 @@ def _enum_perfect_matchings_iter_networkx(graph: BipartiteGraph[TLeft, TRight, T
     yield from _enum_perfect_matchings_iter_networkx(graph_plus, matching)
 
     # Construct G-(e)
-    graph_minus = graph.without_edge(edge)
+    graph_minus = networkx_graph_without_edge(graph, edge)
 
     # Step 7
     # Trim unnecessary edges from G-(e).
