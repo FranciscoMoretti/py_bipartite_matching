@@ -106,17 +106,21 @@ def _enum_perfect_matchings_iter_networkx(graph: BipartiteGraph[TLeft, TRight, T
     directed_match_graph = create_directed_matching_graph(graph, graph.graph['top'], matching)
     
     try:
+        # raw_cycle = nx.find_cycle(directed_match_graph)
+        raw_cycle = find_cycle_with_edge_of_matching(graph=directed_match_graph, matching=matching)
+    except nx.exception.NetworkXNoCycle:
         return
 
     # Make sure the cycle "starts"" in the the left part
     # If not, start the cycle from the second node, which is in the left part
-    if raw_cycle[0][0] != LEFT:
-        cycle = tuple([raw_cycle[-1][1]] + list(x[1] for x in raw_cycle[:-1]))
+    if directed_match_graph.nodes[raw_cycle[0]]['bipartite'] == LEFT:
+        cycle = tuple(raw_cycle[:])
     else:
-        cycle = tuple(x[1] for x in raw_cycle)
+        cycle = tuple(raw_cycle[-1:] + raw_cycle[:-1])
+    assert directed_match_graph.nodes[cycle[0]]['bipartite'] == LEFT
 
     # Step 2 - TODO: Properly find right edge? (to get complexity bound)
-    edge = cast(Edge, cycle[:2])
+    edge = tuple(cycle[:2])
 
     # Step 3
     # already done because we are not really finding the optimal edge
