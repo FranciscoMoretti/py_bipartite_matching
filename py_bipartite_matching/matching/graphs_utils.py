@@ -74,6 +74,6 @@ def networkx_graph_without_nodes_of_edge(graph, edge):
 
 def networkx_graph_without_edge(graph, edge):
     """Returns a copy of this bipartite graph with the given edge removed."""
-    new_graph  = graph.copy()
+    new_graph  = copy.deepcopy(graph)
     new_graph.remove_edge(*edge)
     return new_graph
