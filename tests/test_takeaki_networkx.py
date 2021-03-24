@@ -13,6 +13,15 @@ from py_bipartite_matching.matching.networkx_biparite_sample import davis_southe
 from networkx.algorithms.bipartite.matching import maximum_matching
 import networkx as nx
 
+def print_debug_info(graph, matchings):
+    print(f"Graph and matchings")
+    print(f"Nodes :{graph.nodes}")
+    print(f"Edges :{graph.edges}")
+    print(f"Matchings :")
+    for number, matching in enumerate(matchings):
+        print(f"{number}: {set(matching)}")
+    print("-"*80)
+
 @st.composite
 def bipartite_graph(draw):
     m = draw(st.integers(min_value=1, max_value=4))
@@ -66,7 +75,7 @@ def test_enum_perfect_matchings_correctness_networkx(graph):
         frozen_matching = frozenset(matching.items())
         assert frozen_matching not in matchings, "Matching was duplicate"
         matchings.add(frozen_matching)
-
+    print_debug_info(graph=graph, matchings=matchings)
 
 @given(bipartite_graph())
 def test_enum_maximum_matchings_correctness_networkx(graph):
@@ -81,6 +90,7 @@ def test_enum_maximum_matchings_correctness_networkx(graph):
         frozen_matching = frozenset(matching.items())
         assert frozen_matching not in matchings, "Matching was duplicate"
         matchings.add(frozen_matching)
+    print_debug_info(graph=graph, matchings=matchings)
 
 @pytest.mark.parametrize('n', range(1, 6))
 def test_perfect_matchings_completeness_networkx(n):
@@ -100,6 +110,7 @@ def test_perfect_matchings_completeness_networkx(n):
     count = len(matchings)
     expected_count = int(math.factorial(n))
     assert count == expected_count
+    print_debug_info(graph=graph, matchings=matchings)
 
 @pytest.mark.parametrize('n, m', filter(lambda x: x[0] >= x[1], itertools.product(range(1, 6), range(0, 4))))
 def test_maximum_matchings_completeness_networkx(n, m):
@@ -119,6 +130,7 @@ def test_maximum_matchings_completeness_networkx(n, m):
     count = len(matchings)
     expected_count = m > 0 and int(math.factorial(n) / math.factorial(n - m)) or 0
     assert count == expected_count
+    print_debug_info(graph=graph, matchings=matchings)
 
 
 def test_create_directed_matching_graph():
