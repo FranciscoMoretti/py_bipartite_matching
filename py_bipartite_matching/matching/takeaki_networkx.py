@@ -132,6 +132,7 @@ def _enum_perfect_matchings_iter_networkx(graph: BipartiteGraph[TLeft, TRight, T
     for i in range(0, len(cycle), 2):
         matching_prime[cycle[i]] = cycle[i - 1]  # type: ignore
 
+    assert matching_prime != matching
     yield matching_prime
 
     # Construct G+(e)
