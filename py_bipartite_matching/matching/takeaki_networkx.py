@@ -75,14 +75,17 @@ def find_cycle_with_edge_of_matching(graph, matching):
     raise nx.NetworkXNoCycle
 
 def enum_perfect_matchings_networkx(graph: nx.Graph) -> Iterator[Dict[TLeft, TRight]]:
-    if len(graph._left) != len(graph._right):
+    if len(graph.graph['top']) != len(graph.graph['bottom']):
         return
-    size = len(graph._left)
-    matching = nx.maximum_matching(graph)
+    size = len(graph.graph['top'])
+    matching = maximum_matching(graph, top_nodes=graph.graph['top'])
+    # Express the matching only from a top node to a bottom node
+    matching = {k: v for k, v in matching.items() if k in graph.graph['top']}
     if matching and len(matching) == size:
         yield matching
-        graph = graph.__copy__()
-        yield from _enum_perfect_matchings_iter_networkx(graph, matching)
+        yield from _enum_perfect_matchings_iter_networkx(
+            graph=copy.deepcopy(graph),
+            matching=matching)
 
 
 def _enum_perfect_matchings_iter_networkx(graph: BipartiteGraph[TLeft, TRight, TEdgeValue], matching: Dict[TLeft, TRight]) \
