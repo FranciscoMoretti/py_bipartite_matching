@@ -52,14 +52,17 @@ def balanced_bipartite_graph(draw):
 
     return graph
 
+@given(balanced_bipartite_graph())
 def test_enum_perfect_matchings_correctness_networkx(graph):
-    graph =  davis_southern_women_graph()
-    size = len(graph._left) # should be equal to graph.right as well
+    if len(graph.graph['top']) != len(graph.graph['bottom']):
+        pass
+
+    size = len(graph.graph['top']) # should be equal to graph.right as well
     matchings = set()
-    for matching in enum_perfect_matchings(graph):
+    for matching in enum_perfect_matchings_networkx(graph):
         assert len(matching) == size, "Matching has a different size than the first one"
         for edge in matching.items():
-            assert edge in graph, "Matching contains an edge that was not in the graph"
+            assert edge in graph.edges, "Matching contains an edge that was not in the graph"
         frozen_matching = frozenset(matching.items())
         assert frozen_matching not in matchings, "Matching was duplicate"
         matchings.add(frozen_matching)
