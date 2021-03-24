@@ -17,20 +17,8 @@ from py_bipartite_matching.matching.graphs_utils import (
     networkx_graph_without_nodes_of_edge
 )
 
-from py_bipartite_matching.matching.bipartite import (
-    BipartiteGraph,
-    DirectedMatchGraph,
-    T,
-    TLeft,
-    TRight,
-    TEdgeValue,
-    Node,
-    NodeList,
-    NodeSet,
-    Edge,
-    LEFT,
-    RIGHT
-)
+LEFT = 0
+RIGHT = 1
 
 __all__ = ['enum_perfect_matchings_networkx', 'enum_maximum_matchings_networkx', 'create_directed_matching_graph'] 
 
@@ -74,7 +62,7 @@ def find_cycle_with_edge_of_matching(graph, matching):
     # No cycle was found
     raise nx.NetworkXNoCycle
 
-def enum_perfect_matchings_networkx(graph: nx.Graph) -> Iterator[Dict[TLeft, TRight]]:
+def enum_perfect_matchings_networkx(graph: nx.Graph) -> Iterator[dict]:
     if len(graph.graph['top']) != len(graph.graph['bottom']):
         return
     size = len(graph.graph['top'])
@@ -88,8 +76,8 @@ def enum_perfect_matchings_networkx(graph: nx.Graph) -> Iterator[Dict[TLeft, TRi
             matching=matching)
 
 
-def _enum_perfect_matchings_iter_networkx(graph: BipartiteGraph[TLeft, TRight, TEdgeValue], matching: Dict[TLeft, TRight]) \
-    -> Iterator[Dict[TLeft, TRight]]:
+def _enum_perfect_matchings_iter_networkx(graph: nx.Graph, matching: dict) \
+    -> Iterator[dict]:
     # Algorithm described in "Algorithms for Enumerating All Perfect, Maximum and Maximal Matchings in Bipartite Graphs"
     # By Takeaki Uno in "Algorithms and Computation: 8th International Symposium, ISAAC '97 Singapore,
     # December 17-19, 1997 Proceedings"
@@ -106,7 +94,6 @@ def _enum_perfect_matchings_iter_networkx(graph: BipartiteGraph[TLeft, TRight, T
     directed_match_graph = create_directed_matching_graph(graph, graph.graph['top'], matching)
     
     try:
-        # raw_cycle = nx.find_cycle(directed_match_graph)
         raw_cycle = find_cycle_with_edge_of_matching(graph=directed_match_graph, matching=matching)
     except nx.exception.NetworkXNoCycle:
         return
@@ -184,7 +171,6 @@ def _enum_maximum_matchings_iter_networkx(graph: nx.Graph, matching: dict,
     # Find a cycle in the directed matching graph
     # Note that this cycle alternates between nodes from the left and the right part of the graph
     try:
-        # raw_cycle = nx.find_cycle(directed_match_graph)
         raw_cycle = find_cycle_with_edge_of_matching(graph=directed_match_graph, matching=matching)
     except nx.exception.NetworkXNoCycle:
         raw_cycle = None

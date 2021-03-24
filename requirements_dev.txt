@@ -12,5 +12,3 @@ twine==3.3.0
 
 pytest==6.2.2
 pytest-runner==5.3.0
-
-git+https://github.com/FranciscoMoretti/pygraph.git@master
