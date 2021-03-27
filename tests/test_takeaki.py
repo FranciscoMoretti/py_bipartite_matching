@@ -11,7 +11,7 @@ from py_bipartite_matching.matching.takeaki import enum_perfect_matchings, enum_
 from networkx.algorithms.bipartite.matching import maximum_matching
 import networkx as nx
 
-# Known limitation of pyling to process composites from hypothesis
+# Known limitation of pylint to process composites from hypothesis
 # pylint: disable=no-value-for-parameter; `draw` provided by `@composite`
 
 
