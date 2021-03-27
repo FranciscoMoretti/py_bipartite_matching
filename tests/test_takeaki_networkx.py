@@ -11,6 +11,7 @@ from py_bipartite_matching.matching.takeaki_networkx import enum_perfect_matchin
 from networkx.algorithms.bipartite.matching import maximum_matching
 import networkx as nx
 
+
 def print_debug_info(graph, matchings):
     print(f"Graph and matchings")
     print(f"Nodes :{graph.nodes}")
@@ -18,14 +19,15 @@ def print_debug_info(graph, matchings):
     print(f"Matchings :")
     for number, matching in enumerate(matchings):
         print(f"{number}: {set(matching)}")
-    print("-"*80)
+    print("-" * 80)
+
 
 @st.composite
 def bipartite_graph(draw):
     m = draw(st.integers(min_value=1, max_value=4))
     n = draw(st.integers(min_value=1, max_value=5))
     top_nodes = list(range(m))
-    bottom_nodes = list(range(10, 10+n))
+    bottom_nodes = list(range(10, 10 + n))
 
     graph = nx.Graph()
     graph.add_nodes_from(top_nodes, bipartite=0)
@@ -38,6 +40,7 @@ def bipartite_graph(draw):
                 graph.add_edge(i, j)
 
     return graph
+
 
 @st.composite
 def balanced_bipartite_graph(draw):
@@ -45,7 +48,7 @@ def balanced_bipartite_graph(draw):
     # the same number of vertex on each partition
     n = draw(st.integers(min_value=1, max_value=6))
     top_nodes = list(range(n))
-    bottom_nodes = list(range(10, 10+n))
+    bottom_nodes = list(range(10, 10 + n))
 
     graph = nx.Graph()
     graph.add_nodes_from(top_nodes, bipartite=0)
@@ -59,13 +62,14 @@ def balanced_bipartite_graph(draw):
 
     return graph
 
+
 @given(balanced_bipartite_graph())
 def test_enum_perfect_matchings_correctness_networkx(graph):
     print(f"Testing enum_perfect_matchings_correctness")
     if len(graph.graph['top']) != len(graph.graph['bottom']):
         pass
 
-    size = len(graph.graph['top']) # should be equal to graph.right as well
+    size = len(graph.graph['top'])  # should be equal to graph.right as well
     matchings = set()
     for matching in enum_perfect_matchings_networkx(graph):
         assert len(matching) == size, "Matching has a different size than the first one"
@@ -75,6 +79,7 @@ def test_enum_perfect_matchings_correctness_networkx(graph):
         assert frozen_matching not in matchings, "Matching was duplicate"
         matchings.add(frozen_matching)
     print_debug_info(graph=graph, matchings=matchings)
+
 
 @given(bipartite_graph())
 def test_enum_maximum_matchings_correctness_networkx(graph):
@@ -92,11 +97,12 @@ def test_enum_maximum_matchings_correctness_networkx(graph):
         matchings.add(frozen_matching)
     print_debug_info(graph=graph, matchings=matchings)
 
+
 @pytest.mark.parametrize('n', range(1, 6))
 def test_perfect_matchings_completeness_networkx(n):
     print(f"Testing perfect_matchings_completeness")
     top_nodes = list(range(n))
-    bottom_nodes = list(range(10, 10+n))
+    bottom_nodes = list(range(10, 10 + n))
     edges = itertools.product(top_nodes, bottom_nodes)
     # create the graph
     graph = nx.Graph()
@@ -113,11 +119,14 @@ def test_perfect_matchings_completeness_networkx(n):
     assert count == expected_count
     print_debug_info(graph=graph, matchings=matchings)
 
-@pytest.mark.parametrize('n, m', filter(lambda x: x[0] >= x[1], itertools.product(range(1, 6), range(0, 4))))
+
+@pytest.mark.parametrize('n, m',
+                         filter(lambda x: x[0] >= x[1],
+                                itertools.product(range(1, 6), range(0, 4))))
 def test_maximum_matchings_completeness_networkx(n, m):
     print(f"Testing maximum_matchings_completeness")
     top_nodes = list(range(n))
-    bottom_nodes = list(range(10, 10+m))
+    bottom_nodes = list(range(10, 10 + m))
     edges = itertools.product(top_nodes, bottom_nodes)
     # create the graph
     graph = nx.Graph()
@@ -134,9 +143,12 @@ def test_maximum_matchings_completeness_networkx(n, m):
     assert count == expected_count
     print_debug_info(graph=graph, matchings=matchings)
 
+
 @given(bipartite_graph())
 def test_create_directed_matching_graph(graph):
     matching = maximum_matching(G=graph, top_nodes=graph.graph['top'])
-    digraph = create_directed_matching_graph(graph=graph, top_nodes=graph.graph['top'], matching=matching)
+    digraph = create_directed_matching_graph(graph=graph,
+                                             top_nodes=graph.graph['top'],
+                                             matching=matching)
     assert graph.nodes == digraph.nodes
     assert len(graph.edges) == len(digraph.edges)

@@ -1,9 +1,7 @@
 #!/usr/bin/env python
-
 """Tests for `py_bipartite_matching` package."""
 
 import pytest
-
 
 from py_bipartite_matching import py_bipartite_matching
 
