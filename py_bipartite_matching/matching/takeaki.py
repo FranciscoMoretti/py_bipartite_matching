@@ -10,7 +10,7 @@ from typing import Iterator
 import copy
 import networkx as nx
 from networkx.algorithms.bipartite.matching import maximum_matching
-from networkx.algorithms import shortest_path
+from networkx.algorithms.shortest_paths import shortest_path
 
 from py_bipartite_matching.matching.graphs_utils import (graph_without_edge,
                                                          graph_without_nodes_of_edge)
