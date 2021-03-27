@@ -6,7 +6,7 @@ import hypothesis.strategies as st
 from hypothesis import example, given
 import pytest
 
-from py_bipartite_matching.matching.takeaki_networkx import enum_perfect_matchings_networkx, enum_maximum_matchings_networkx, create_directed_matching_graph
+from py_bipartite_matching.matching.takeaki import enum_perfect_matchings, enum_maximum_matchings, create_directed_matching_graph
 
 from networkx.algorithms.bipartite.matching import maximum_matching
 import networkx as nx
@@ -64,14 +64,14 @@ def balanced_bipartite_graph(draw):
 
 
 @given(balanced_bipartite_graph())
-def test_enum_perfect_matchings_correctness_networkx(graph):
+def test_enum_perfect_matchings_correctness(graph):
     print(f"Testing enum_perfect_matchings_correctness")
     if len(graph.graph['top']) != len(graph.graph['bottom']):
         pass
 
     size = len(graph.graph['top'])  # should be equal to graph.right as well
     matchings = set()
-    for matching in enum_perfect_matchings_networkx(graph):
+    for matching in enum_perfect_matchings(graph):
         assert len(matching) == size, "Matching has a different size than the first one"
         for edge in matching.items():
             assert edge in graph.edges, "Matching contains an edge that was not in the graph"
@@ -82,11 +82,11 @@ def test_enum_perfect_matchings_correctness_networkx(graph):
 
 
 @given(bipartite_graph())
-def test_enum_maximum_matchings_correctness_networkx(graph):
+def test_enum_maximum_matchings_correctness(graph):
     print(f"Testing enum_maximum_matchings_correctness")
     size = None
     matchings = set()
-    for matching in enum_maximum_matchings_networkx(graph):
+    for matching in enum_maximum_matchings(graph):
         if size is None:
             size = len(matching)
         assert len(matching) == size, "Matching has a different size than the first one"
@@ -99,7 +99,7 @@ def test_enum_maximum_matchings_correctness_networkx(graph):
 
 
 @pytest.mark.parametrize('n', range(1, 6))
-def test_perfect_matchings_completeness_networkx(n):
+def test_perfect_matchings_completeness(n):
     print(f"Testing perfect_matchings_completeness")
     top_nodes = list(range(n))
     bottom_nodes = list(range(10, 10 + n))
@@ -113,7 +113,7 @@ def test_perfect_matchings_completeness_networkx(n):
     graph.add_edges_from(edges)
 
     matchings = {frozenset(matching.items()) for matching in \
-        enum_perfect_matchings_networkx(graph)}
+        enum_perfect_matchings(graph)}
     count = len(matchings)
     expected_count = int(math.factorial(n))
     assert count == expected_count
@@ -123,7 +123,7 @@ def test_perfect_matchings_completeness_networkx(n):
 @pytest.mark.parametrize('n, m',
                          filter(lambda x: x[0] >= x[1],
                                 itertools.product(range(1, 6), range(0, 4))))
-def test_maximum_matchings_completeness_networkx(n, m):
+def test_maximum_matchings_completeness(n, m):
     print(f"Testing maximum_matchings_completeness")
     top_nodes = list(range(n))
     bottom_nodes = list(range(10, 10 + m))
@@ -137,7 +137,7 @@ def test_maximum_matchings_completeness_networkx(n, m):
     graph.add_edges_from(edges)
 
     matchings = {frozenset(matching.items()) for matching in \
-        enum_maximum_matchings_networkx(graph)}
+        enum_maximum_matchings(graph)}
     count = len(matchings)
     expected_count = m > 0 and int(math.factorial(n) / math.factorial(n - m)) or 0
     assert count == expected_count

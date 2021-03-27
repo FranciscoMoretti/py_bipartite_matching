@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import networkx as nx
 
-from py_bipartite_matching.matching.takeaki_networkx import enum_perfect_matchings_networkx, enum_maximum_matchings_networkx
+from py_bipartite_matching.matching.takeaki import enum_perfect_matchings, enum_maximum_matchings
 
 
 def print_debug_info(graph, matchings):
@@ -65,7 +65,7 @@ def test_cubelets_enum_perfect_matchings():
 
     size = len(graph.graph['top'])  # should be equal to graph.right as well
     matchings = set()
-    for matching in enum_perfect_matchings_networkx(graph):
+    for matching in enum_perfect_matchings(graph):
         assert len(matching) == size, "Matching has a different size than the first one"
         for edge in matching.items():
             assert edge in graph.edges, "Matching contains an edge that was not in the graph"

@@ -2,8 +2,8 @@
 import pytest
 
 import networkx as nx
-from py_bipartite_matching.matching.graphs_utils import (networkx_graph_without_edge,
-                                                         networkx_graph_without_nodes_of_edge)
+from py_bipartite_matching.matching.graphs_utils import (graph_without_edge,
+                                                         graph_without_nodes_of_edge)
 
 @pytest.mark.parametrize(
     '   adjacency_list,             edge,               expected_adjacency_list',
@@ -19,9 +19,9 @@ from py_bipartite_matching.matching.graphs_utils import (networkx_graph_without_
         ({0: {2}, 1: {2}, 2: {0}},  [1, 2]              , {0: set()})
     ]
 )  # yapf: disable
-def test_networkx_graph_without_nodes_of_edge(adjacency_list, edge, expected_adjacency_list):
+def test_graph_without_nodes_of_edge(adjacency_list, edge, expected_adjacency_list):
     graph = nx.Graph(adjacency_list)
-    new_graph = networkx_graph_without_nodes_of_edge(graph, edge)
+    new_graph = graph_without_nodes_of_edge(graph, edge)
     expected_graph = nx.Graph(expected_adjacency_list)
     assert nx.is_isomorphic(new_graph, expected_graph)
 
@@ -39,8 +39,8 @@ def test_networkx_graph_without_nodes_of_edge(adjacency_list, edge, expected_adj
         ({0: {2}, 1: {2}, 2: {0}},  [1, 2]                , {0: {2}, 1: set(), 2: {0}})
     ]
 )  # yapf: disable
-def test_networkx_graph_without_edge(adjacency_list, edge, expected_adjacency_list):
+def test_graph_without_edge(adjacency_list, edge, expected_adjacency_list):
     graph = nx.Graph(adjacency_list)
-    new_graph = networkx_graph_without_edge(graph, edge)
+    new_graph = graph_without_edge(graph, edge)
     expected_graph = nx.Graph(expected_adjacency_list)
     assert nx.is_isomorphic(new_graph, expected_graph)

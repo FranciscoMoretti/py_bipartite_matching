@@ -12,16 +12,13 @@ import networkx as nx
 from networkx.algorithms.bipartite.matching import maximum_matching
 from networkx.algorithms import shortest_path
 
-from py_bipartite_matching.matching.graphs_utils import (networkx_graph_without_edge,
-                                                         networkx_graph_without_nodes_of_edge)
+from py_bipartite_matching.matching.graphs_utils import (graph_without_edge,
+                                                         graph_without_nodes_of_edge)
 
 LEFT = 0
 RIGHT = 1
 
-__all__ = [
-    'enum_perfect_matchings_networkx', 'enum_maximum_matchings_networkx',
-    'create_directed_matching_graph'
-]
+__all__ = ['enum_perfect_matchings', 'enum_maximum_matchings', 'create_directed_matching_graph']
 
 
 def create_directed_matching_graph(graph: nx.Graph, top_nodes: set, matching: dict) -> nx.DiGraph:
@@ -65,7 +62,7 @@ def find_cycle_with_edge_of_matching(graph, matching):
     raise nx.NetworkXNoCycle
 
 
-def enum_perfect_matchings_networkx(graph: nx.Graph) -> Iterator[dict]:
+def enum_perfect_matchings(graph: nx.Graph) -> Iterator[dict]:
     if len(graph.graph['top']) != len(graph.graph['bottom']):
         return
     size = len(graph.graph['top'])
@@ -74,11 +71,10 @@ def enum_perfect_matchings_networkx(graph: nx.Graph) -> Iterator[dict]:
     matching = {k: v for k, v in matching.items() if k in graph.graph['top']}
     if matching and len(matching) == size:
         yield matching
-        yield from _enum_perfect_matchings_iter_networkx(graph=copy.deepcopy(graph),
-                                                         matching=matching)
+        yield from _enum_perfect_matchings_iter(graph=copy.deepcopy(graph), matching=matching)
 
 
-def _enum_perfect_matchings_iter_networkx(graph: nx.Graph, matching: dict) \
+def _enum_perfect_matchings_iter(graph: nx.Graph, matching: dict) \
     -> Iterator[dict]:
     # Algorithm described in "Algorithms for Enumerating All Perfect, Maximum and Maximal Matchings in Bipartite Graphs"
     # By Takeaki Uno in "Algorithms and Computation: 8th International Symposium, ISAAC '97 Singapore,
@@ -125,40 +121,40 @@ def _enum_perfect_matchings_iter_networkx(graph: nx.Graph, matching: dict) \
     yield matching_prime
 
     # Construct G+(e)
-    graph_plus = networkx_graph_without_nodes_of_edge(graph, edge)
+    graph_plus = graph_without_nodes_of_edge(graph, edge)
 
     # Step 5
     # TODO: Trim unnecessary edges from G+(e).
 
     # Step 6
     # Recurse with the old matching M but without the edge e
-    yield from _enum_perfect_matchings_iter_networkx(graph_plus, matching)
+    yield from _enum_perfect_matchings_iter(graph_plus, matching)
 
     # Construct G-(e)
-    graph_minus = networkx_graph_without_edge(graph, edge)
+    graph_minus = graph_without_edge(graph, edge)
 
     # Step 7
     # Trim unnecessary edges from G-(e).
 
     # Step 8
     # Recurse with the new matching M' but without the edge e
-    yield from _enum_perfect_matchings_iter_networkx(graph_minus, matching_prime)
+    yield from _enum_perfect_matchings_iter(graph_minus, matching_prime)
 
 
-def enum_maximum_matchings_networkx(graph: nx.Graph) -> Iterator[dict]:
+def enum_maximum_matchings(graph: nx.Graph) -> Iterator[dict]:
     matching = maximum_matching(graph, top_nodes=graph.graph['top'])
     # Express the matching only from a top node to a bottom node
     matching = {k: v for k, v in matching.items() if k in graph.graph['top']}
     if matching:
         yield matching
-        yield from _enum_maximum_matchings_iter_networkx(
+        yield from _enum_maximum_matchings_iter(
             graph=copy.deepcopy(graph),
             matching=matching,
             directed_match_graph=create_directed_matching_graph(graph, graph.graph['top'],
                                                                 matching))
 
 
-def _enum_maximum_matchings_iter_networkx(graph: nx.Graph, matching: dict,
+def _enum_maximum_matchings_iter(graph: nx.Graph, matching: dict,
                                           directed_match_graph: nx.DiGraph) \
         -> Iterator[dict]:
     # Algorithm described in "Algorithms for Enumerating All Perfect, Maximum and Maximal Matchings in Bipartite Graphs"
@@ -208,23 +204,22 @@ def _enum_maximum_matchings_iter_networkx(graph: nx.Graph, matching: dict,
 
         # Step 6
         # Construct G+(e) and D(G+(e), M\e)
-        graph_plus = networkx_graph_without_nodes_of_edge(graph, edge)
+        graph_plus = graph_without_nodes_of_edge(graph, edge)
         directed_match_graph_plus = create_directed_matching_graph(graph_plus,
                                                                    graph_plus.graph['top'],
                                                                    matching)
         # Recurse with the old matching M but without the edge e
-        yield from _enum_maximum_matchings_iter_networkx(graph_plus, matching,
-                                                         directed_match_graph_plus)
+        yield from _enum_maximum_matchings_iter(graph_plus, matching, directed_match_graph_plus)
 
         # Step 7
         # Construct G-(e) and D(G-(e), M')
-        graph_minus = networkx_graph_without_edge(graph, edge)
+        graph_minus = graph_without_edge(graph, edge)
         directed_match_graph_minus = create_directed_matching_graph(graph_minus,
                                                                     graph_minus.graph['top'],
                                                                     matching_prime)
         # Recurse with the new matching M' but without the edge e
-        yield from _enum_maximum_matchings_iter_networkx(graph_minus, matching_prime,
-                                                         directed_match_graph_minus)
+        yield from _enum_maximum_matchings_iter(graph_minus, matching_prime,
+                                                directed_match_graph_minus)
 
     else:
         # Step 8
@@ -265,15 +260,15 @@ def _enum_maximum_matchings_iter_networkx(graph: nx.Graph, matching: dict,
         edge = (left2, right)
 
         # Construct G+(e) and G-(e)
-        graph_plus = networkx_graph_without_nodes_of_edge(graph, edge)
-        graph_minus = networkx_graph_without_edge(graph, edge)
+        graph_plus = graph_without_nodes_of_edge(graph, edge)
+        graph_minus = graph_without_edge(graph, edge)
 
         dgm_plus = create_directed_matching_graph(graph_plus, graph_plus.graph['top'],
                                                   matching_prime)
         dgm_minus = create_directed_matching_graph(graph_minus, graph_minus.graph['top'], matching)
 
         # Step 9
-        yield from _enum_maximum_matchings_iter_networkx(graph_plus, matching_prime, dgm_plus)
+        yield from _enum_maximum_matchings_iter(graph_plus, matching_prime, dgm_plus)
 
         # Step 10
-        yield from _enum_maximum_matchings_iter_networkx(graph_minus, matching, dgm_minus)
+        yield from _enum_maximum_matchings_iter(graph_minus, matching, dgm_minus)

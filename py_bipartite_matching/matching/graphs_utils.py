@@ -3,7 +3,7 @@ import copy
 import networkx as nx
 
 
-def networkx_graph_without_nodes_of_edge(graph, edge):
+def graph_without_nodes_of_edge(graph, edge):
     """Returns a copy of this bipartite graph with the given edge and its adjacent nodes removed."""
     new_graph = copy.deepcopy(graph)
 
@@ -24,7 +24,7 @@ def networkx_graph_without_nodes_of_edge(graph, edge):
     return new_graph
 
 
-def networkx_graph_without_edge(graph, edge):
+def graph_without_edge(graph, edge):
     """Returns a copy of this bipartite graph with the given edge removed."""
     new_graph = copy.deepcopy(graph)
     new_graph.remove_edge(*edge)
