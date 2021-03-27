@@ -10,8 +10,8 @@ Py Bipartite Matching
      :target: https://pyup.io/repos/github/FranciscoMoretti/py_bipartite_matching/
      :alt: Updates
 
-.. image:: https://img.shields.io/travis/FranciscoMoretti/py_bipartite_matching.svg
-        :target: https://travis-ci.com/FranciscoMoretti/py_bipartite_matching
+.. image:: https://travis-ci.com/FranciscoMoretti/py_bipartite_matching.svg?branch=master
+    :target: https://travis-ci.com/FranciscoMoretti/py_bipartite_matching
 
 .. image:: https://readthedocs.org/projects/py-bipartite-matching/badge/?version=latest
         :target: https://py-bipartite-matching.readthedocs.io/en/latest/?badge=latest
