@@ -74,8 +74,7 @@ def _enum_perfect_matchings_iter(graph: nx.Graph, matching: Dict[Any, Any]) \
     # edges in the cycle
     matching_prime = matching.copy()
     for i in range(0, len(cycle), 2):
-        matching_prime[cycle[i]] = cycle[i - 1]  # type: ignore
-
+        matching_prime[cycle[i]] = cycle[i - 1]
     assert matching_prime != matching
     yield matching_prime
 
