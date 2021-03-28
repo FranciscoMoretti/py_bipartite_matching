@@ -1,7 +1,7 @@
 import networkx as nx
 
 
-def davis_southern_women_graph():
+def davis_southern_women_graph() -> nx.Graph:
     """Returns Davis Southern women social network.
 
     This is a bipartite graph.
