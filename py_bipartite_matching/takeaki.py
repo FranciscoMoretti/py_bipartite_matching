@@ -5,7 +5,7 @@ Maximum and Maximal Matchings in Bipartite Graphs. From Takeaki Uno publication.
 The function `enum_perfect_matchings` can be used to enumerate all maximum matchings of a `BipartiteGraph`.
 The function `enum_maximum_matchings` can be used to enumerate all maximum matchings of a `BipartiteGraph`.
 """
-from typing import Iterator
+from typing import Iterator, Set, Any, Dict, List, cast
 
 import copy
 import networkx as nx
@@ -20,7 +20,8 @@ RIGHT = 1
 __all__ = ['enum_perfect_matchings', 'enum_maximum_matchings', 'create_directed_matching_graph']
 
 
-def create_directed_matching_graph(graph: nx.Graph, top_nodes: set, matching: dict) -> nx.DiGraph:
+def create_directed_matching_graph(graph: nx.Graph, top_nodes: Set[Any],
+                                   matching: Dict[Any, Any]) -> nx.DiGraph:
     # creates a directed copy of the graph with all edges on both directions
     directed_graph = graph.to_directed()
 
@@ -40,7 +41,7 @@ def create_directed_matching_graph(graph: nx.Graph, top_nodes: set, matching: di
     return directed_graph
 
 
-def find_cycle_with_edge_of_matching(graph, matching):
+def find_cycle_with_edge_of_matching(graph: nx.Graph, matching: Dict[Any, Any]) -> List[Any]:
     tmp_graph = copy.deepcopy(graph)
     # Remove the edge so and find a path from a node of the edge to the other one.
     # If a path is found, the circle is completed with the removed edge
@@ -56,12 +57,12 @@ def find_cycle_with_edge_of_matching(graph, matching):
             continue
         else:
             tmp_graph.add_edge(k, v)
-            return path
+            return cast(List[Any], path)
     # No cycle was found
     raise nx.NetworkXNoCycle
 
 
-def enum_perfect_matchings(graph: nx.Graph) -> Iterator[dict]:
+def enum_perfect_matchings(graph: nx.Graph) -> Iterator[Dict[Any, Any]]:
     if len(graph.graph['top']) != len(graph.graph['bottom']):
         return
     size = len(graph.graph['top'])
@@ -73,8 +74,8 @@ def enum_perfect_matchings(graph: nx.Graph) -> Iterator[dict]:
         yield from _enum_perfect_matchings_iter(graph=copy.deepcopy(graph), matching=matching)
 
 
-def _enum_perfect_matchings_iter(graph: nx.Graph, matching: dict) \
-    -> Iterator[dict]:
+def _enum_perfect_matchings_iter(graph: nx.Graph, matching: Dict[Any, Any]) \
+    -> Iterator[Dict[Any, Any]]:
     # Algorithm described in "Algorithms for Enumerating All Perfect, Maximum and Maximal Matchings in Bipartite Graphs"
     # By Takeaki Uno in "Algorithms and Computation: 8th International Symposium, ISAAC '97 Singapore,
     # December 17-19, 1997 Proceedings"
@@ -140,7 +141,7 @@ def _enum_perfect_matchings_iter(graph: nx.Graph, matching: dict) \
     yield from _enum_perfect_matchings_iter(graph_minus, matching_prime)
 
 
-def enum_maximum_matchings(graph: nx.Graph) -> Iterator[dict]:
+def enum_maximum_matchings(graph: nx.Graph) -> Iterator[Dict[Any, Any]]:
     matching = maximum_matching(graph, top_nodes=graph.graph['top'])
     # Express the matching only from a top node to a bottom node
     matching = {k: v for k, v in matching.items() if k in graph.graph['top']}
@@ -153,9 +154,9 @@ def enum_maximum_matchings(graph: nx.Graph) -> Iterator[dict]:
                                                                 matching))
 
 
-def _enum_maximum_matchings_iter(graph: nx.Graph, matching: dict,
+def _enum_maximum_matchings_iter(graph: nx.Graph, matching: Dict[Any, Any],
                                           directed_match_graph: nx.DiGraph) \
-        -> Iterator[dict]:
+        -> Iterator[Dict[Any, Any]]:
     # Algorithm described in "Algorithms for Enumerating All Perfect, Maximum and Maximal Matchings in Bipartite Graphs"
     # By Takeaki Uno in "Algorithms and Computation: 8th International Symposium, ISAAC '97 Singapore,
     # December 17-19, 1997 Proceedings"
@@ -171,7 +172,7 @@ def _enum_maximum_matchings_iter(graph: nx.Graph, matching: dict,
     try:
         raw_cycle = find_cycle_with_edge_of_matching(graph=directed_match_graph, matching=matching)
     except nx.exception.NetworkXNoCycle:
-        raw_cycle = None
+        raw_cycle = []
 
     if raw_cycle:
         # Make sure the cycle "starts"" in the the left part
@@ -196,7 +197,7 @@ def _enum_maximum_matchings_iter(graph: nx.Graph, matching: dict,
         # edges in the cycle
         matching_prime = matching.copy()
         for i in range(0, len(cycle), 2):
-            matching_prime[cycle[i]] = cycle[i - 1]  # type: ignore
+            matching_prime[cycle[i]] = cycle[i - 1]
 
         assert matching_prime != matching
         yield matching_prime
