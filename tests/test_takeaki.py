@@ -6,7 +6,7 @@ import hypothesis.strategies as st
 from hypothesis import example, given
 import pytest
 
-from py_bipartite_matching.matching.takeaki import enum_perfect_matchings, enum_maximum_matchings, create_directed_matching_graph
+from py_bipartite_matching.takeaki import enum_perfect_matchings, enum_maximum_matchings, create_directed_matching_graph
 
 from networkx.algorithms.bipartite.matching import maximum_matching
 import networkx as nx

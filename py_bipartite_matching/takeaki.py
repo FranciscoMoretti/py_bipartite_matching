@@ -12,8 +12,7 @@ import networkx as nx
 from networkx.algorithms.bipartite.matching import maximum_matching
 from networkx.algorithms.shortest_paths import shortest_path
 
-from py_bipartite_matching.matching.graphs_utils import (graph_without_edge,
-                                                         graph_without_nodes_of_edge)
+from py_bipartite_matching.graphs_utils import (graph_without_edge, graph_without_nodes_of_edge)
 
 LEFT = 0
 RIGHT = 1

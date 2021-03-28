@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import networkx as nx
 
-from py_bipartite_matching.matching.takeaki import enum_perfect_matchings, enum_maximum_matchings
+from py_bipartite_matching.takeaki import enum_perfect_matchings, enum_maximum_matchings
 
 
 def print_debug_info(graph, matchings):

@@ -2,8 +2,7 @@
 import pytest
 
 import networkx as nx
-from py_bipartite_matching.matching.graphs_utils import (graph_without_edge,
-                                                         graph_without_nodes_of_edge)
+from py_bipartite_matching.graphs_utils import (graph_without_edge, graph_without_nodes_of_edge)
 
 @pytest.mark.parametrize(
     '   adjacency_list,             edge,               expected_adjacency_list',
