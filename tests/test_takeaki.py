@@ -3,7 +3,7 @@ import itertools
 import math
 
 import hypothesis.strategies as st
-from hypothesis import example, given
+from hypothesis import given
 import pytest
 
 from py_bipartite_matching.takeaki import enum_perfect_matchings, enum_maximum_matchings, create_directed_matching_graph
@@ -16,10 +16,10 @@ import networkx as nx
 
 
 def print_debug_info(graph, matchings):
-    print(f"Graph and matchings")
+    print("Graph and matchings")
     print(f"Nodes :{graph.nodes}")
     print(f"Edges :{graph.edges}")
-    print(f"Matchings :")
+    print("Matchings :")
     for number, matching in enumerate(matchings):
         print(f"{number}: {set(matching)}")
     print("-" * 80)
@@ -68,7 +68,7 @@ def balanced_bipartite_graph(draw):
 
 @given(balanced_bipartite_graph())
 def test_enum_perfect_matchings_correctness(graph):
-    print(f"Testing enum_perfect_matchings_correctness")
+    print("Testing enum_perfect_matchings_correctness")
     if len(graph.graph['top']) != len(graph.graph['bottom']):
         pass
 
@@ -86,7 +86,7 @@ def test_enum_perfect_matchings_correctness(graph):
 
 @given(bipartite_graph())
 def test_enum_maximum_matchings_correctness(graph):
-    print(f"Testing enum_maximum_matchings_correctness")
+    print("Testing enum_maximum_matchings_correctness")
     size = None
     matchings = set()
     for matching in enum_maximum_matchings(graph):
@@ -103,7 +103,7 @@ def test_enum_maximum_matchings_correctness(graph):
 
 @pytest.mark.parametrize('n', range(1, 6))
 def test_perfect_matchings_completeness(n):
-    print(f"Testing perfect_matchings_completeness")
+    print("Testing perfect_matchings_completeness")
     top_nodes = list(range(n))
     bottom_nodes = list(range(10, 10 + n))
     edges = itertools.product(top_nodes, bottom_nodes)
@@ -127,7 +127,7 @@ def test_perfect_matchings_completeness(n):
                          filter(lambda x: x[0] >= x[1],
                                 itertools.product(range(1, 6), range(0, 4))))
 def test_maximum_matchings_completeness(n, m):
-    print(f"Testing maximum_matchings_completeness")
+    print("Testing maximum_matchings_completeness")
     top_nodes = list(range(n))
     bottom_nodes = list(range(10, 10 + m))
     edges = itertools.product(top_nodes, bottom_nodes)

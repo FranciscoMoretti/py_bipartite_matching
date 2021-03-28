@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 import networkx as nx
 
-from py_bipartite_matching.takeaki import enum_perfect_matchings, enum_maximum_matchings
+from py_bipartite_matching.takeaki import enum_perfect_matchings
 
 
 def print_debug_info(graph, matchings):
-    print(f"Graph and matchings")
+    print("Graph and matchings")
     print(f"Nodes :{graph.nodes}")
     print(f"Edges :{graph.edges}")
-    print(f"Matchings :")
+    print("Matchings :")
     for number, matching in enumerate(matchings):
         print(f"{number}: {set(matching)}")
     print("-" * 80)
@@ -56,7 +56,7 @@ def create_cubelet_graph(example):
 
 
 def test_cubelets_enum_perfect_matchings():
-    print(f"Testing cubelets_enum_perfect_matchings")
+    print("Testing cubelets_enum_perfect_matchings")
 
     graph = create_cubelet_graph(example_0)
 
