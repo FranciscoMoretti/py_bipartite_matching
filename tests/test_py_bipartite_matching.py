@@ -8,7 +8,8 @@ import hypothesis.strategies as st
 from hypothesis import given
 import pytest
 
-from py_bipartite_matching.py_bipartite_matching import enum_perfect_matchings, enum_maximum_matchings, create_directed_matching_graph
+from py_bipartite_matching.py_bipartite_matching import enum_perfect_matchings, enum_maximum_matchings
+from py_bipartite_matching.graphs_utils import create_directed_matching_graph
 
 from networkx.algorithms.bipartite.matching import maximum_matching
 import networkx as nx

@@ -5,61 +5,20 @@ Maximum and Maximal Matchings in Bipartite Graphs. From Takeaki Uno publication.
 The function `enum_perfect_matchings` can be used to enumerate all maximum matchings of a `BipartiteGraph`.
 The function `enum_maximum_matchings` can be used to enumerate all maximum matchings of a `BipartiteGraph`.
 """
-from typing import Iterator, Set, Any, Dict, List, cast
+from typing import Iterator, Any, Dict
 
 import copy
 import networkx as nx
 from networkx.algorithms.bipartite.matching import maximum_matching
-from networkx.algorithms.shortest_paths import shortest_path
 
-from py_bipartite_matching.graphs_utils import (graph_without_edge, graph_without_nodes_of_edge)
+from py_bipartite_matching.graphs_utils import (create_directed_matching_graph,
+                                                find_cycle_with_edge_of_matching,
+                                                graph_without_edge, graph_without_nodes_of_edge)
 
 LEFT = 0
 RIGHT = 1
 
-__all__ = ['enum_perfect_matchings', 'enum_maximum_matchings', 'create_directed_matching_graph']
-
-
-def create_directed_matching_graph(graph: nx.Graph, top_nodes: Set[Any],
-                                   matching: Dict[Any, Any]) -> nx.DiGraph:
-    # creates a directed copy of the graph with all edges on both directions
-    directed_graph = graph.to_directed()
-
-    for top_node in top_nodes:
-        for bottom_node in graph.adj[top_node]:
-            if top_node in matching.keys() and bottom_node == matching[top_node]:
-                directed_graph.remove_edge(bottom_node, top_node)
-            else:
-                directed_graph.remove_edge(top_node, bottom_node)
-    # check for duplicated (should not exist any)
-    ordered_edges = [tuple(sorted(e)) for e in directed_graph.edges]
-    assert len(ordered_edges) == len(set(ordered_edges))
-
-    assert len(graph.edges) == len(directed_graph.edges)
-    assert len(graph.nodes) == len(directed_graph.nodes)
-
-    return directed_graph
-
-
-def find_cycle_with_edge_of_matching(graph: nx.Graph, matching: Dict[Any, Any]) -> List[Any]:
-    tmp_graph = copy.deepcopy(graph)
-    # Remove the edge so and find a path from a node of the edge to the other one.
-    # If a path is found, the circle is completed with the removed edge
-    for k, v in matching.items():
-        if not tmp_graph.has_edge(k, v):
-            # The graph could have been reduced
-            continue
-        tmp_graph.remove_edge(k, v)
-        try:
-            path = shortest_path(G=tmp_graph, source=v, target=k)
-        except nx.NetworkXNoPath:
-            tmp_graph.add_edge(k, v)
-            continue
-        else:
-            tmp_graph.add_edge(k, v)
-            return cast(List[Any], path)
-    # No cycle was found
-    raise nx.NetworkXNoCycle
+__all__ = ['enum_perfect_matchings', 'enum_maximum_matchings']
 
 
 def enum_perfect_matchings(graph: nx.Graph) -> Iterator[Dict[Any, Any]]:
