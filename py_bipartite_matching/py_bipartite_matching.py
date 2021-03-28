@@ -5,7 +5,7 @@ Maximum and Maximal Matchings in Bipartite Graphs. From Takeaki Uno publication.
 The function `enum_perfect_matchings` can be used to enumerate all maximum matchings of a `BipartiteGraph`.
 The function `enum_maximum_matchings` can be used to enumerate all maximum matchings of a `BipartiteGraph`.
 """
-from typing import Iterator, Any, Dict
+from typing import cast, Iterator, Any, Dict, Tuple
 
 import copy
 import networkx as nx
@@ -64,7 +64,7 @@ def _enum_perfect_matchings_iter(graph: nx.Graph, matching: Dict[Any, Any]) \
     assert directed_match_graph.nodes[cycle[0]]['bipartite'] == LEFT
 
     # Step 2 - TODO: Properly find right edge? (to get complexity bound)
-    edge = tuple(cycle[:2])
+    edge = cast(Tuple[Any, Any], tuple(cycle[:2]))
 
     # Step 3
     # already done because we are not really finding the optimal edge
@@ -145,7 +145,7 @@ def _enum_maximum_matchings_iter(graph: nx.Graph, matching: Dict[Any, Any],
         assert directed_match_graph.nodes[cycle[0]]['bipartite'] == LEFT
 
         # Step 3 - TODO: Properly find right edge? (to get complexity bound)
-        edge = tuple(cycle[:2])
+        edge = cast(Tuple[Any, Any], tuple(cycle[:2]))
 
         # Step 4
         # already done because we are not really finding the optimal edge
