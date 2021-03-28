@@ -1,9 +1,10 @@
 # utils for graphs of the networkx library
 import copy
 import networkx as nx
+from typing import Any, Tuple
 
 
-def graph_without_nodes_of_edge(graph: nx.Graph, edge):
+def graph_without_nodes_of_edge(graph: nx.Graph, edge: Tuple[Any, Any]) -> nx.Graph:
     """Returns a copy of this bipartite graph with the given edge and its adjacent nodes removed."""
     new_graph = copy.deepcopy(graph)
 
@@ -24,7 +25,7 @@ def graph_without_nodes_of_edge(graph: nx.Graph, edge):
     return new_graph
 
 
-def graph_without_edge(graph: nx.Graph, edge):
+def graph_without_edge(graph: nx.Graph, edge: Tuple[Any, Any]) -> nx.Graph:
     """Returns a copy of this bipartite graph with the given edge removed."""
     new_graph = copy.deepcopy(graph)
     new_graph.remove_edge(*edge)
