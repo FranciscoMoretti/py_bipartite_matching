@@ -189,12 +189,12 @@ def _enum_maximum_matchings_iter(graph: nx.Graph, matching: Dict[Any, Any],
         left2 = None
         right = None
 
-        for node1 in directed_match_graph.nodes:
-            if directed_match_graph.nodes[node1]['bipartite'] == LEFT and node1 in matching.keys():
+        for node1 in graph.nodes:
+            if graph.nodes[node1]['bipartite'] == LEFT and node1 in matching.keys():
                 left1 = node1
                 right = matching[left1]
-                if right in directed_match_graph.nodes:
-                    for node2 in directed_match_graph.neighbors(right):
+                if right in graph.nodes:
+                    for node2 in graph.neighbors(right):
                         if node2 not in matching:
                             left2 = node2
                             break
