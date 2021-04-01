@@ -88,7 +88,14 @@ def _enum_perfect_matchings_iter(graph: nx.Graph, matching: Dict[Any, Any]) \
     graph_plus = graph_without_nodes_of_edge(graph, edge)
 
     # Step 5
-    # TODO: Trim unnecessary edges from G+(e).
+    # Trim unnecessary edges from G+(e).
+    directed_match_graph = create_directed_matching_graph(graph_plus, graph_plus.graph['top'],
+                                                          matching)
+    trimmed_directed_match_graph = strongly_connected_components_decomposition(
+        directed_match_graph)
+    graph_plus = trimmed_directed_match_graph.to_undirected()
+    assert len(graph_plus.edges) == len(trimmed_directed_match_graph.edges)
+    assert len(graph_plus.nodes) == len(trimmed_directed_match_graph.nodes)
 
     # Step 6
     # Recurse with the old matching M but without the edge e
@@ -99,6 +106,13 @@ def _enum_perfect_matchings_iter(graph: nx.Graph, matching: Dict[Any, Any]) \
 
     # Step 7
     # Trim unnecessary edges from G-(e).
+    directed_match_graph = create_directed_matching_graph(graph_minus, graph_minus.graph['top'],
+                                                          matching)
+    trimmed_directed_match_graph = strongly_connected_components_decomposition(
+        directed_match_graph)
+    graph_minus = trimmed_directed_match_graph.to_undirected()
+    assert len(graph_minus.edges) == len(trimmed_directed_match_graph.edges)
+    assert len(graph_minus.nodes) == len(trimmed_directed_match_graph.nodes)
 
     # Step 8
     # Recurse with the new matching M' but without the edge e
