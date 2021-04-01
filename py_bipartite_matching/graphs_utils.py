@@ -26,6 +26,19 @@ def find_cycle_with_edge_of_matching(graph: nx.Graph, matching: Dict[Any, Any]) 
     raise nx.NetworkXNoCycle
 
 
+def strongly_connected_components_decomposition(graph: nx.DiGraph) -> nx.DiGraph:
+    scc = nx.strongly_connected_components(graph)
+    for cc in scc:
+        for node in cc:
+            to_remove = set()
+            for neighbor in graph.adj[node]:
+                if neighbor not in cc:
+                    to_remove.add(neighbor)
+            for neighbor in to_remove:
+                graph.remove_edge(node, neighbor)
+    return graph
+
+
 def create_directed_matching_graph(graph: nx.Graph, top_nodes: Set[Any],
                                    matching: Dict[Any, Any]) -> nx.DiGraph:
     # creates a directed copy of the graph with all edges on both directions
