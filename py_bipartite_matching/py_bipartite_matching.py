@@ -30,6 +30,12 @@ def enum_perfect_matchings(graph: nx.Graph) -> Iterator[Dict[Any, Any]]:
     matching = {k: v for k, v in matching.items() if k in graph.graph['top']}
     if matching and len(matching) == size:
         yield matching
+        directed_match_graph = create_directed_matching_graph(graph, graph.graph['top'], matching)
+        trimmed_directed_match_graph = strongly_connected_components_decomposition(
+            directed_match_graph)
+        graph = trimmed_directed_match_graph.to_undirected()
+        assert len(graph.edges) == len(trimmed_directed_match_graph.edges)
+        assert len(graph.nodes) == len(trimmed_directed_match_graph.nodes)
         yield from _enum_perfect_matchings_iter(graph=copy.deepcopy(graph), matching=matching)
 
 
@@ -105,11 +111,12 @@ def enum_maximum_matchings(graph: nx.Graph) -> Iterator[Dict[Any, Any]]:
     matching = {k: v for k, v in matching.items() if k in graph.graph['top']}
     if matching:
         yield matching
-        yield from _enum_maximum_matchings_iter(
-            graph=copy.deepcopy(graph),
-            matching=matching,
-            directed_match_graph=create_directed_matching_graph(graph, graph.graph['top'],
-                                                                matching))
+        directed_match_graph = create_directed_matching_graph(graph, graph.graph['top'], matching)
+        trimmed_directed_match_graph = strongly_connected_components_decomposition(
+            directed_match_graph)
+        yield from _enum_maximum_matchings_iter(graph=copy.deepcopy(graph),
+                                                matching=matching,
+                                                directed_match_graph=trimmed_directed_match_graph)
 
 
 def _enum_maximum_matchings_iter(graph: nx.Graph, matching: Dict[Any, Any],
