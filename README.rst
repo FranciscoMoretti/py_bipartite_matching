@@ -33,7 +33,9 @@ See http://dx.doi.org/10.1007/3-540-63890-3_11
 Features
 --------
 
-* TODO
+* Functions available:
+        * enum_perfect_matchings
+        * enum_maximum_matchings
 
 Credits
 -------
