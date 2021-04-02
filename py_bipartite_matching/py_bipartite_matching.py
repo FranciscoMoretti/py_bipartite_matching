@@ -107,7 +107,8 @@ def _enum_perfect_matchings_iter(graph: nx.Graph, matching: Dict[Any, Any]) \
     # Step 7
     # Trim unnecessary edges from G-(e).
     directed_match_graph_minus = create_directed_matching_graph(graph_minus,
-                                                                graph_minus.graph['top'], matching)
+                                                                graph_minus.graph['top'],
+                                                                matching_prime)
     trimmed_directed_match_graph_minus = strongly_connected_components_decomposition(
         directed_match_graph_minus)
     graph_minus = trimmed_directed_match_graph_minus.to_undirected()
