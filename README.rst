@@ -1,7 +1,9 @@
 =====================
 Py Bipartite Matching
 =====================
-
+.. image:: icon.png
+         :height: 200px
+         :align: center
 
 .. image:: https://img.shields.io/pypi/v/py_bipartite_matching.svg
         :target: https://pypi.python.org/pypi/py_bipartite_matching
