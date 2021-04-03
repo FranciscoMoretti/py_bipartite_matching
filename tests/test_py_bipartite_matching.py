@@ -103,20 +103,13 @@ def test_enum_maximum_matchings_correctness(graph):
 @pytest.mark.parametrize('n', range(1, 6))
 def test_perfect_matchings_completeness(n):
     print("Testing perfect_matchings_completeness")
-    top_nodes = list(range(n))
-    bottom_nodes = list(range(10, 10 + n))
-    edges = itertools.product(top_nodes, bottom_nodes)
-    # create the graph
-    graph = nx.Graph()
-    graph.add_nodes_from(top_nodes, bipartite=0)
-    graph.add_nodes_from(bottom_nodes, bipartite=1)
-    graph.add_edges_from(edges)
-
+    # Create a complete bipartite graph
+    graph = nx.complete_bipartite_graph(n1=n, n2=n, create_using=nx.Graph)
+    # Create a set of matchings to be sure there are no repetitions
     matchings = {frozenset(matching.items()) for matching in \
         enum_perfect_matchings(graph)}
-    count = len(matchings)
-    expected_count = int(math.factorial(n))
-    assert count == expected_count
+    # The matchings count should be equal to n!
+    assert len(matchings) == int(math.factorial(n))
     print_debug_info(graph=graph, matchings=matchings)
 
 
@@ -125,20 +118,14 @@ def test_perfect_matchings_completeness(n):
                                 itertools.product(range(1, 6), range(0, 4))))
 def test_maximum_matchings_completeness(n, m):
     print("Testing maximum_matchings_completeness")
-    top_nodes = list(range(n))
-    bottom_nodes = list(range(10, 10 + m))
-    edges = itertools.product(top_nodes, bottom_nodes)
-    # create the graph
-    graph = nx.Graph()
-    graph.add_nodes_from(top_nodes, bipartite=0)
-    graph.add_nodes_from(bottom_nodes, bipartite=1)
-    graph.add_edges_from(edges)
-
+    # Create a complete bipartite graph
+    graph = nx.complete_bipartite_graph(n1=n, n2=m, create_using=nx.Graph)
+    # Create a set of matchings to be sure there are no repetitions
     matchings = {frozenset(matching.items()) for matching in \
         enum_maximum_matchings(graph)}
-    count = len(matchings)
+    # The matchings count should be equal to n!/(n-m)! if m > 0, 0 otherwise
     expected_count = m > 0 and int(math.factorial(n) / math.factorial(n - m)) or 0
-    assert count == expected_count
+    assert len(matchings) == expected_count
     print_debug_info(graph=graph, matchings=matchings)
 
 
