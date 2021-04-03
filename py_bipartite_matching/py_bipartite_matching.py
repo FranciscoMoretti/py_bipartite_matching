@@ -13,7 +13,7 @@ from networkx.algorithms.bipartite.matching import maximum_matching
 
 from .graphs_utils import (create_directed_matching_graph, find_cycle_with_edge_of_matching,
                            graph_without_edge, graph_without_nodes_of_edge,
-                           strongly_connected_components_decomposition)
+                           strongly_connected_components_decomposition, top_nodes, bottom_nodes)
 
 LEFT = 0
 RIGHT = 1
@@ -22,15 +22,15 @@ __all__ = ['enum_perfect_matchings', 'enum_maximum_matchings']
 
 
 def enum_perfect_matchings(graph: nx.Graph) -> Iterator[Dict[Any, Any]]:
-    if len(graph.graph['top']) != len(graph.graph['bottom']):
+    if len(list(top_nodes(graph))) != len(list(bottom_nodes(graph))):
         return
-    size = len(graph.graph['top'])
-    matching = maximum_matching(graph, top_nodes=graph.graph['top'])
+    size = len(list(top_nodes(graph)))
+    matching = maximum_matching(graph, top_nodes=top_nodes(graph))
     # Express the matching only from a top node to a bottom node
-    matching = {k: v for k, v in matching.items() if k in graph.graph['top']}
+    matching = {k: v for k, v in matching.items() if k in top_nodes(graph)}
     if matching and len(matching) == size:
         yield matching
-        directed_match_graph = create_directed_matching_graph(graph, graph.graph['top'], matching)
+        directed_match_graph = create_directed_matching_graph(graph, top_nodes(graph), matching)
         trimmed_directed_match_graph = strongly_connected_components_decomposition(
             directed_match_graph)
         graph = trimmed_directed_match_graph.to_undirected()
@@ -54,7 +54,7 @@ def _enum_perfect_matchings_iter(graph: nx.Graph, matching: Dict[Any, Any]) \
     # Note that this cycle alternates between nodes from the left and the right part of the graph
 
     # TODO: avoid doing a directed graph by implementing missing algorithm steps from paper
-    directed_match_graph = create_directed_matching_graph(graph, graph.graph['top'], matching)
+    directed_match_graph = create_directed_matching_graph(graph, top_nodes(graph), matching)
 
     try:
         raw_cycle = find_cycle_with_edge_of_matching(graph=directed_match_graph, matching=matching)
@@ -89,7 +89,7 @@ def _enum_perfect_matchings_iter(graph: nx.Graph, matching: Dict[Any, Any]) \
 
     # Step 5
     # Trim unnecessary edges from G+(e).
-    directed_match_graph_plus = create_directed_matching_graph(graph_plus, graph_plus.graph['top'],
+    directed_match_graph_plus = create_directed_matching_graph(graph_plus, top_nodes(graph_plus),
                                                                matching)
     trimmed_directed_match_graph_plus = strongly_connected_components_decomposition(
         directed_match_graph_plus)
@@ -107,7 +107,7 @@ def _enum_perfect_matchings_iter(graph: nx.Graph, matching: Dict[Any, Any]) \
     # Step 7
     # Trim unnecessary edges from G-(e).
     directed_match_graph_minus = create_directed_matching_graph(graph_minus,
-                                                                graph_minus.graph['top'],
+                                                                top_nodes(graph_minus),
                                                                 matching_prime)
     trimmed_directed_match_graph_minus = strongly_connected_components_decomposition(
         directed_match_graph_minus)
@@ -121,12 +121,12 @@ def _enum_perfect_matchings_iter(graph: nx.Graph, matching: Dict[Any, Any]) \
 
 
 def enum_maximum_matchings(graph: nx.Graph) -> Iterator[Dict[Any, Any]]:
-    matching = maximum_matching(graph, top_nodes=graph.graph['top'])
+    matching = maximum_matching(graph, top_nodes=top_nodes(graph))
     # Express the matching only from a top node to a bottom node
-    matching = {k: v for k, v in matching.items() if k in graph.graph['top']}
+    matching = {k: v for k, v in matching.items() if k in top_nodes(graph)}
     if matching:
         yield matching
-        directed_match_graph = create_directed_matching_graph(graph, graph.graph['top'], matching)
+        directed_match_graph = create_directed_matching_graph(graph, top_nodes(graph), matching)
         trimmed_directed_match_graph = strongly_connected_components_decomposition(
             directed_match_graph)
         yield from _enum_maximum_matchings_iter(graph=copy.deepcopy(graph),
@@ -186,8 +186,7 @@ def _enum_maximum_matchings_iter(graph: nx.Graph, matching: Dict[Any, Any],
         # Construct G+(e) and D(G+(e), M\e)
         graph_plus = graph_without_nodes_of_edge(graph, edge)
         directed_match_graph_plus = create_directed_matching_graph(graph_plus,
-                                                                   graph_plus.graph['top'],
-                                                                   matching)
+                                                                   top_nodes(graph_plus), matching)
         # Recurse with the old matching M but without the edge e
         yield from _enum_maximum_matchings_iter(graph_plus, matching, directed_match_graph_plus)
 
@@ -195,7 +194,7 @@ def _enum_maximum_matchings_iter(graph: nx.Graph, matching: Dict[Any, Any],
         # Construct G-(e) and D(G-(e), M')
         graph_minus = graph_without_edge(graph, edge)
         directed_match_graph_minus = create_directed_matching_graph(graph_minus,
-                                                                    graph_minus.graph['top'],
+                                                                    top_nodes(graph_minus),
                                                                     matching_prime)
         # Recurse with the new matching M' but without the edge e
         yield from _enum_maximum_matchings_iter(graph_minus, matching_prime,
@@ -243,9 +242,9 @@ def _enum_maximum_matchings_iter(graph: nx.Graph, matching: Dict[Any, Any],
         graph_plus = graph_without_nodes_of_edge(graph, edge)
         graph_minus = graph_without_edge(graph, edge)
 
-        dgm_plus = create_directed_matching_graph(graph_plus, graph_plus.graph['top'],
+        dgm_plus = create_directed_matching_graph(graph_plus, top_nodes(graph_plus),
                                                   matching_prime)
-        dgm_minus = create_directed_matching_graph(graph_minus, graph_minus.graph['top'], matching)
+        dgm_minus = create_directed_matching_graph(graph_minus, top_nodes(graph_minus), matching)
 
         # Step 9
         yield from _enum_maximum_matchings_iter(graph_plus, matching_prime, dgm_plus)

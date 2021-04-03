@@ -2,7 +2,19 @@
 import copy
 import networkx as nx
 from networkx.algorithms.shortest_paths import shortest_path
-from typing import Any, Tuple, Dict, List, Set, cast
+from typing import Any, Iterator, Iterable, Tuple, Dict, List, Set, cast
+
+
+def top_nodes(graph: nx.Graph) -> Iterator[Any]:
+    for node, data in graph.nodes(data=True):
+        if data['bipartite'] == 0:
+            yield node
+
+
+def bottom_nodes(graph: nx.Graph) -> Iterator[Any]:
+    for node, data in graph.nodes(data=True):
+        if data['bipartite'] == 1:
+            yield node
 
 
 def find_cycle_with_edge_of_matching(graph: nx.Graph, matching: Dict[Any, Any]) -> List[Any]:
@@ -39,7 +51,7 @@ def strongly_connected_components_decomposition(graph: nx.DiGraph) -> nx.DiGraph
     return graph
 
 
-def create_directed_matching_graph(graph: nx.Graph, top_nodes: Set[Any],
+def create_directed_matching_graph(graph: nx.Graph, top_nodes: Iterable[Any],
                                    matching: Dict[Any, Any]) -> nx.DiGraph:
     # creates a directed copy of the graph with all edges on both directions
     directed_graph = graph.to_directed()
@@ -63,16 +75,6 @@ def create_directed_matching_graph(graph: nx.Graph, top_nodes: Set[Any],
 def graph_without_nodes_of_edge(graph: nx.Graph, edge: Tuple[Any, Any]) -> nx.Graph:
     """Returns a copy of this bipartite graph with the given edge and its adjacent nodes removed."""
     new_graph = copy.deepcopy(graph)
-
-    if new_graph.graph.get('top') and new_graph.graph.get('bottom'):
-        if edge[0] in new_graph.graph.get('top'):
-            new_graph.graph.get('top').remove(edge[0])
-            new_graph.graph.get('bottom').remove(edge[1])
-        else:
-            new_graph.graph.get('top').remove(edge[1])
-            new_graph.graph.get('bottom').remove(edge[0])
-        assert len(new_graph.graph.get('top')) == len(graph.graph.get('top')) - 1
-        assert len(new_graph.graph.get('bottom')) == len(graph.graph.get('bottom')) - 1
 
     new_graph.remove_node(edge[0])
     new_graph.remove_node(edge[1])

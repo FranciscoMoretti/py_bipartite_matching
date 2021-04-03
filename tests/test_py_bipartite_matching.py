@@ -9,7 +9,7 @@ from hypothesis import given
 import pytest
 
 from py_bipartite_matching.py_bipartite_matching import enum_perfect_matchings, enum_maximum_matchings
-from py_bipartite_matching.graphs_utils import create_directed_matching_graph
+import py_bipartite_matching.graphs_utils as gu
 
 from networkx.algorithms.bipartite.matching import maximum_matching
 import networkx as nx
@@ -37,9 +37,7 @@ def bipartite_graph(draw):
 
     graph = nx.Graph()
     graph.add_nodes_from(top_nodes, bipartite=0)
-    graph.graph["top"] = top_nodes
     graph.add_nodes_from(bottom_nodes, bipartite=1)
-    graph.graph["bottom"] = bottom_nodes
     for i in top_nodes:
         for j in bottom_nodes:
             if draw(st.booleans()):
@@ -58,9 +56,7 @@ def balanced_bipartite_graph(draw):
 
     graph = nx.Graph()
     graph.add_nodes_from(top_nodes, bipartite=0)
-    graph.graph["top"] = top_nodes
     graph.add_nodes_from(bottom_nodes, bipartite=1)
-    graph.graph["bottom"] = bottom_nodes
     for i in top_nodes:
         for j in bottom_nodes:
             if draw(st.booleans()):
@@ -72,10 +68,10 @@ def balanced_bipartite_graph(draw):
 @given(balanced_bipartite_graph())
 def test_enum_perfect_matchings_correctness(graph):
     print("Testing enum_perfect_matchings_correctness")
-    if len(graph.graph['top']) != len(graph.graph['bottom']):
+    if len(list(gu.top_nodes(graph))) != len(list(gu.bottom_nodes(graph))):
         pass
 
-    size = len(graph.graph['top'])  # should be equal to graph.right as well
+    size = len(list(gu.top_nodes(graph)))  # should be equal to graph.right as well
     matchings = set()
     for matching in enum_perfect_matchings(graph):
         assert len(matching) == size, "Matching has a different size than the first one"
@@ -113,9 +109,7 @@ def test_perfect_matchings_completeness(n):
     # create the graph
     graph = nx.Graph()
     graph.add_nodes_from(top_nodes, bipartite=0)
-    graph.graph["top"] = top_nodes
     graph.add_nodes_from(bottom_nodes, bipartite=1)
-    graph.graph["bottom"] = bottom_nodes
     graph.add_edges_from(edges)
 
     matchings = {frozenset(matching.items()) for matching in \
@@ -137,9 +131,7 @@ def test_maximum_matchings_completeness(n, m):
     # create the graph
     graph = nx.Graph()
     graph.add_nodes_from(top_nodes, bipartite=0)
-    graph.graph["top"] = top_nodes
     graph.add_nodes_from(bottom_nodes, bipartite=1)
-    graph.graph["bottom"] = bottom_nodes
     graph.add_edges_from(edges)
 
     matchings = {frozenset(matching.items()) for matching in \
@@ -152,9 +144,9 @@ def test_maximum_matchings_completeness(n, m):
 
 @given(bipartite_graph())
 def test_create_directed_matching_graph(graph):
-    matching = maximum_matching(G=graph, top_nodes=graph.graph['top'])
-    digraph = create_directed_matching_graph(graph=graph,
-                                             top_nodes=graph.graph['top'],
-                                             matching=matching)
+    matching = maximum_matching(G=graph, top_nodes=gu.top_nodes(graph))
+    digraph = gu.create_directed_matching_graph(graph=graph,
+                                                top_nodes=gu.top_nodes(graph),
+                                                matching=matching)
     assert graph.nodes == digraph.nodes
     assert len(graph.edges) == len(digraph.edges)

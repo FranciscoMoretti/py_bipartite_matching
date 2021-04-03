@@ -2,6 +2,7 @@
 import networkx as nx
 
 from py_bipartite_matching.py_bipartite_matching import enum_perfect_matchings
+from py_bipartite_matching.graphs_utils import top_nodes, bottom_nodes
 
 
 def print_debug_info(graph, matchings):
@@ -43,9 +44,7 @@ def create_cubelet_graph(example):
     bottom_nodes = list(range(ind_to_btm(0), ind_to_btm(size)))
 
     graph.add_nodes_from(top_nodes, bipartite=0)
-    graph.graph["top"] = top_nodes
     graph.add_nodes_from(bottom_nodes, bipartite=1)
-    graph.graph["bottom"] = bottom_nodes
 
     for top_node, element in enumerate(example):
         for bottom_node in bottom_nodes:
@@ -60,10 +59,10 @@ def test_cubelets_enum_perfect_matchings():
 
     graph = create_cubelet_graph(example_0)
 
-    if len(graph.graph['top']) != len(graph.graph['bottom']):
+    if len(list(top_nodes(graph))) != len(list(bottom_nodes(graph))):
         pass
 
-    size = len(graph.graph['top'])  # should be equal to graph.right as well
+    size = len(list(top_nodes(graph)))  # should be equal to graph.right as well
     matchings = set()
     for matching in enum_perfect_matchings(graph):
         assert len(matching) == size, "Matching has a different size than the first one"
