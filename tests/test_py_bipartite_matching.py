@@ -97,7 +97,7 @@ def test_enum_maximum_matchings_correctness(n_m_k_seed):
 def test_perfect_matchings_completeness(n):
     print("Testing perfect_matchings_completeness")
     # Create a complete bipartite graph
-    graph = nx.complete_bipartite_graph(n1=n, n2=n, create_using=nx.Graph)
+    graph = nx.complete_bipartite_graph(n, n, nx.Graph)
     # Create a set of matchings to be sure there are no repetitions
     matchings = {frozenset(matching.items()) for matching in \
         enum_perfect_matchings(graph)}
@@ -112,7 +112,7 @@ def test_perfect_matchings_completeness(n):
 def test_maximum_matchings_completeness(n, m):
     print("Testing maximum_matchings_completeness")
     # Create a complete bipartite graph
-    graph = nx.complete_bipartite_graph(n1=n, n2=m, create_using=nx.Graph)
+    graph = nx.complete_bipartite_graph(n, m, nx.Graph)
     # Create a set of matchings to be sure there are no repetitions
     matchings = {frozenset(matching.items()) for matching in \
         enum_maximum_matchings(graph)}
