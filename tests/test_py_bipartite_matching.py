@@ -29,45 +29,35 @@ def print_debug_info(graph, matchings):
 
 
 @st.composite
-def bipartite_graph(draw):
-    m = draw(st.integers(min_value=1, max_value=4))
+def bipartite_graph_inputs(draw):
+    # Slect the number of nodes on each side of the biparite  graph
     n = draw(st.integers(min_value=1, max_value=5))
-    top_nodes = list(range(m))
-    bottom_nodes = list(range(10, 10 + n))
-
-    graph = nx.Graph()
-    graph.add_nodes_from(top_nodes, bipartite=0)
-    graph.add_nodes_from(bottom_nodes, bipartite=1)
-    for i in top_nodes:
-        for j in bottom_nodes:
-            if draw(st.booleans()):
-                graph.add_edge(i, j)
-
-    return graph
+    m = draw(st.integers(min_value=1, max_value=5))
+    # Create a random bipartite graph with k edges
+    k = draw(st.integers(min_value=0, max_value=n * m))
+    # Select some seeds to have randomness but also reproducibility
+    seed = draw(st.integers(min_value=0, max_value=3))
+    return (n, m, k, seed)
 
 
 @st.composite
-def balanced_bipartite_graph(draw):
+def balanced_bipartite_graph_inputs(draw):
     # For a perfect matching to exist the bipartite graph must have the same
     # the same number of vertex on each partition
-    n = draw(st.integers(min_value=1, max_value=6))
-    top_nodes = list(range(n))
-    bottom_nodes = list(range(10, 10 + n))
-
-    graph = nx.Graph()
-    graph.add_nodes_from(top_nodes, bipartite=0)
-    graph.add_nodes_from(bottom_nodes, bipartite=1)
-    for i in top_nodes:
-        for j in bottom_nodes:
-            if draw(st.booleans()):
-                graph.add_edge(i, j)
-
-    return graph
+    n = draw(st.integers(min_value=1, max_value=5))
+    # Create a random bipartite graph with k edges
+    k = draw(st.integers(min_value=0, max_value=n * n))
+    # Select some seeds to have randomness but also reproducibility
+    seed = draw(st.integers(min_value=0, max_value=3))
+    return (n, k, seed)
 
 
-@given(balanced_bipartite_graph())
-def test_enum_perfect_matchings_correctness(graph):
+@given(balanced_bipartite_graph_inputs())
+def test_enum_perfect_matchings_correctness(n_k_seed):
     print("Testing enum_perfect_matchings_correctness")
+    n, k, seed = n_k_seed
+    graph = nx.bipartite.gnmk_random_graph(n=n, m=n, k=k, seed=seed)
+
     if len(list(gu.top_nodes(graph))) != len(list(gu.bottom_nodes(graph))):
         pass
 
@@ -83,9 +73,12 @@ def test_enum_perfect_matchings_correctness(graph):
     print_debug_info(graph=graph, matchings=matchings)
 
 
-@given(bipartite_graph())
-def test_enum_maximum_matchings_correctness(graph):
+@given(bipartite_graph_inputs())
+def test_enum_maximum_matchings_correctness(n_m_k_seed):
     print("Testing enum_maximum_matchings_correctness")
+    n, m, k, seed = n_m_k_seed
+    graph = nx.bipartite.gnmk_random_graph(n=n, m=m, k=k, seed=seed)
+
     size = None
     matchings = set()
     for matching in enum_maximum_matchings(graph):
@@ -129,8 +122,11 @@ def test_maximum_matchings_completeness(n, m):
     print_debug_info(graph=graph, matchings=matchings)
 
 
-@given(bipartite_graph())
-def test_create_directed_matching_graph(graph):
+@given(bipartite_graph_inputs())
+def test_create_directed_matching_graph(n_m_k_seed):
+    n, m, k, seed = n_m_k_seed
+    graph = nx.bipartite.gnmk_random_graph(n=n, m=m, k=k, seed=seed)
+
     matching = maximum_matching(G=graph, top_nodes=gu.top_nodes(graph))
     digraph = gu.create_directed_matching_graph(graph=graph,
                                                 top_nodes=gu.top_nodes(graph),
