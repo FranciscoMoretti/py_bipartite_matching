@@ -1,7 +1,7 @@
 =====================
 Py Bipartite Matching
 =====================
-.. image:: icon_152x200.png
+.. image:: https://raw.githubusercontent.com/FranciscoMoretti/py_bipartite_matching/master/icon_152x200.png
         :height: 200px
         :align: center
         :alt: Bipartite graph
