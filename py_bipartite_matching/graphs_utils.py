@@ -26,16 +26,41 @@ def bottom_nodes(graph: nx.Graph,
                 yield node_id
 
 
-def draw_bipartite(graph: nx.Graph) -> None:
+def bipartite_node_positions(graph: nx.Graph) -> Dict[int, Tuple[int, int]]:
     pos: Dict[int, Tuple[int, int]] = dict()
     pos.update((n, (1, i)) for i, n in enumerate(top_nodes(graph)))  # put nodes from X at x=1
     pos.update((n, (2, i)) for i, n in enumerate(bottom_nodes(graph)))  # put nodes from Y at x=2
+    return pos
+
+
+def draw_bipartite(graph: nx.Graph) -> None:
+    pos = bipartite_node_positions(graph)
     nx.draw(graph, pos=pos, with_labels=True, font_weight='bold')
 
 
-def plot_bipartite(graph: nx.Graph) -> None:
-    draw_bipartite(graph)
-    plt.show()
+def draw_nodes(graph: nx.Graph, labels: bool = False) -> None:
+    pos = bipartite_node_positions(graph)
+    nx.draw_networkx_nodes(graph, pos=pos, node_size=300)
+    if labels:
+        top_node_labels = {k: str(v['label']) for k, v in tuple(top_nodes(graph, data=True))}
+        nx.draw_networkx_labels(graph, pos=pos, labels=top_node_labels, horizontalalignment='left')
+        bottom_node_labels = {k: str(v['label']) for k, v in tuple(bottom_nodes(graph, data=True))}
+        nx.draw_networkx_labels(graph,
+                                pos=pos,
+                                labels=bottom_node_labels,
+                                horizontalalignment='right')
+    else:
+        nx.draw_networkx_labels(graph, pos=pos)
+
+
+def draw_edges(graph: nx.Graph, edge_list: Optional[Iterable[Tuple[Any, Any]]] = None) -> None:
+    pos = bipartite_node_positions(graph)
+    nx.draw_networkx_edges(graph, pos=pos, edgelist=edge_list)
+
+
+def draw_matching(graph: nx.Graph, matching: Dict[Any, Any], labels: bool = False) -> None:
+    draw_nodes(graph, labels=labels)
+    draw_edges(graph, matching.items())
 
 
 def find_cycle_with_edge_of_matching(graph: nx.Graph, matching: Dict[Any, Any]) -> List[Any]:
