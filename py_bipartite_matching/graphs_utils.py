@@ -3,19 +3,27 @@ import copy
 import matplotlib.pyplot as plt
 import networkx as nx
 from networkx.algorithms.shortest_paths import shortest_path
-from typing import Any, Iterator, Iterable, Tuple, Dict, List, Set, cast
+from typing import Any, Union, Optional, Iterator, Iterable, Tuple, Dict, List, Set, cast
 
 
-def top_nodes(graph: nx.Graph) -> Iterator[Any]:
-    for node, data in graph.nodes(data=True):
-        if data['bipartite'] == 0:
-            yield node
+def top_nodes(graph: nx.Graph,
+              data: bool = False) -> Union[Iterator[Any], Iterator[Tuple[Any, Any]]]:
+    for node_id, node_data in graph.nodes(data=True):
+        if node_data['bipartite'] == 0:
+            if data:
+                yield node_id, node_data
+            else:
+                yield node_id
 
 
-def bottom_nodes(graph: nx.Graph) -> Iterator[Any]:
-    for node, data in graph.nodes(data=True):
-        if data['bipartite'] == 1:
-            yield node
+def bottom_nodes(graph: nx.Graph,
+                 data: bool = False) -> Union[Iterator[Any], Iterator[Tuple[Any, Any]]]:
+    for node_id, node_data in graph.nodes(data=True):
+        if node_data['bipartite'] == 1:
+            if data:
+                yield node_id, node_data
+            else:
+                yield node_id
 
 
 def draw_bipartite(graph: nx.Graph) -> None:
