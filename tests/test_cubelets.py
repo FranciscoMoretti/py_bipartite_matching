@@ -2,7 +2,7 @@
 import networkx as nx
 
 from py_bipartite_matching.py_bipartite_matching import enum_perfect_matchings
-from py_bipartite_matching.graphs_utils import top_nodes, bottom_nodes
+from py_bipartite_matching.graphs_utils import top_nodes, bottom_nodes, draw_matching
 
 
 def print_debug_info(graph, matchings):

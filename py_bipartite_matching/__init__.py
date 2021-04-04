@@ -5,4 +5,4 @@ __email__ = 'franciscoemoretti@gmail.com'
 __version__ = '0.1.15'
 
 from .py_bipartite_matching import enum_maximum_matchings, enum_perfect_matchings
-from .graphs_utils import top_nodes, bottom_nodes, draw_bipartite, plot_bipartite
+from .graphs_utils import top_nodes, bottom_nodes, draw_bipartite, draw_matching
