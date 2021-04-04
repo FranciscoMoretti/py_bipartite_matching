@@ -40,6 +40,55 @@ Features
         * enum_perfect_matchings
         * enum_maximum_matchings
 
+usage
+-----
+
+To use Py Bipartite Matching in a project the `networkx` package is needed as well
+
+.. code-block:: python
+
+    import py_bipartite_matching as pbm
+    import networkx as nx
+
+Use ``enum_perfect_matchings`` to enumerate all perfect matchings
+
+.. code-block:: python
+
+    n = 2
+    graph = nx.complete_bipartite_graph(n, n, nx.Graph)
+    for matching in pbm.enum_perfect_matchings(graph):
+        print(matching)
+
+Output:
+
+        {0: 2, 1: 3}
+        
+        {0: 3, 1: 2}
+
+Use ``enum_maximum_matchings`` to enumerate all maximum matchings
+
+.. code-block:: python
+
+    n = 2
+    m = 3
+    graph = nx.complete_bipartite_graph(n, m, nx.Graph)
+    for matching in enum_maximum_matchings(graph):
+        print(matching)
+
+Output:
+       
+        {0: 3, 1: 4}
+
+        {0: 4, 1: 3}
+        
+        {0: 3, 2: 4}
+        
+        {1: 3, 2: 4}
+
+        {0: 4, 2: 3}
+        
+        {2: 3, 1: 4}
+
 Credits
 -------
 
