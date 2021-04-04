@@ -42,6 +42,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/FranciscoMoretti/py_bipartite_matching',
-    version='0.1.15',
+    version='0.1.16',
     zip_safe=False,
 )
