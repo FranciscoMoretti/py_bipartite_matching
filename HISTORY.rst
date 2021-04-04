@@ -2,6 +2,14 @@
 History
 =======
 
+0.1.16 (2021-04-04)
+--------------------------------------------------------
+
+* Iterators extended: top_nodes, bottom_nodes
+* More graphics utils
+* Removed plot_bipartite, only draw functions now
+
+
 0.1.15 (2021-04-04)
 --------------------------------------------------------
 
