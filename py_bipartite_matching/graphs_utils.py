@@ -1,5 +1,6 @@
 # utils for graphs of the networkx library
 import copy
+import matplotlib.pyplot as plt
 import networkx as nx
 from networkx.algorithms.shortest_paths import shortest_path
 from typing import Any, Iterator, Iterable, Tuple, Dict, List, Set, cast
@@ -15,6 +16,18 @@ def bottom_nodes(graph: nx.Graph) -> Iterator[Any]:
     for node, data in graph.nodes(data=True):
         if data['bipartite'] == 1:
             yield node
+
+
+def draw_bipartite(graph: nx.Graph) -> None:
+    pos: Dict[int, Tuple[int, int]] = dict()
+    pos.update((n, (1, i)) for i, n in enumerate(top_nodes(graph)))  # put nodes from X at x=1
+    pos.update((n, (2, i)) for i, n in enumerate(bottom_nodes(graph)))  # put nodes from Y at x=2
+    nx.draw(graph, pos=pos, with_labels=True, font_weight='bold')
+
+
+def plot_bipartite(graph: nx.Graph) -> None:
+    draw_bipartite(graph)
+    plt.show()
 
 
 def find_cycle_with_edge_of_matching(graph: nx.Graph, matching: Dict[Any, Any]) -> List[Any]:
