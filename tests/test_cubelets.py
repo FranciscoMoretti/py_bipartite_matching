@@ -30,25 +30,16 @@ example_0 = "FLUUFFLB"
 
 
 def create_cubelet_graph(example):
-    # Create helper functions
-    def ind_to_btm(ind):
-        return ind + 10
-
-    def btm_to_ind(ind):
-        return ind - 10
-
     graph = nx.Graph()
-    size = len(example)
 
-    top_nodes = list(range(size))
-    bottom_nodes = list(range(ind_to_btm(0), ind_to_btm(size)))
+    for count, value in enumerate(example):
+        graph.add_node(count, bipartite=0, label=value)
+    for count, value in enumerate(cubelets_matrix, start=len(example)):
+        graph.add_node(count, bipartite=1, label=value)
 
-    graph.add_nodes_from(top_nodes, bipartite=0)
-    graph.add_nodes_from(bottom_nodes, bipartite=1)
-
-    for top_node, element in enumerate(example):
-        for bottom_node in bottom_nodes:
-            if element in cubelets_matrix[btm_to_ind(bottom_node)]:
+    for top_node in top_nodes(graph):
+        for bottom_node in bottom_nodes(graph):
+            if graph.nodes[top_node]['label'] in graph.nodes[bottom_node]['label']:
                 graph.add_edge(top_node, bottom_node)
 
     return graph
