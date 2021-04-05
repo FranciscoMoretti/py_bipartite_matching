@@ -117,7 +117,7 @@ def test_maximum_matchings_completeness(n, m):
     matchings = {frozenset(matching.items()) for matching in \
         enum_maximum_matchings(graph)}
     # The matchings count should be equal to n!/(n-m)! if m > 0, 0 otherwise
-    expected_count = m > 0 and int(math.factorial(n) / math.factorial(n - m)) or 0
+    expected_count = int(math.factorial(n) / math.factorial(n - m)) if m > 0 else 0
     assert len(matchings) == expected_count
     print_debug_info(graph=graph, matchings=matchings)
 
