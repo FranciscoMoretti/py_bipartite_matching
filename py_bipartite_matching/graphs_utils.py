@@ -1,6 +1,5 @@
 # utils for graphs of the networkx library
 import copy
-import matplotlib.pyplot as plt
 import networkx as nx
 from networkx.algorithms.shortest_paths import shortest_path
 from typing import Any, Union, Optional, Iterator, Iterable, Tuple, Dict, List, Set, cast
