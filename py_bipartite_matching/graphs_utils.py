@@ -2,7 +2,7 @@
 import copy
 import networkx as nx
 from networkx.algorithms.shortest_paths import shortest_path
-from typing import Any, Union, Optional, Iterator, Iterable, Tuple, Dict, List, Set, cast
+from typing import Any, Union, Optional, Iterator, Iterable, Tuple, Dict, List, cast
 
 
 def top_nodes(graph: nx.Graph,
