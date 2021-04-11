@@ -42,13 +42,13 @@ def enum_perfect_matchings(graph: nx.Graph) -> Iterator[Dict[Any, Any]]:
 def _start_cycle_with_left(graph: nx.Graph, raw_cycle: List[Any]) -> Tuple[Any, ...]:
     # Make sure the cycle "starts"" in the the left part
     # If not, start the cycle from the second node, which is in the left part
-    if graph.nodes[raw_cycle[0]]['bipartite'] == LEFT:
-        return tuple(raw_cycle[:])
-    else:
+    if graph.nodes[raw_cycle[0]]['bipartite'] != LEFT:
         return tuple(raw_cycle[-1:] + raw_cycle[:-1])
+    return tuple(raw_cycle[:])
 
-def _enum_perfect_matchings_iter(graph: nx.Graph, matching: Dict[Any, Any]) \
-    -> Iterator[Dict[Any, Any]]:
+
+def _enum_perfect_matchings_iter(graph: nx.Graph, matching: Dict[Any,
+                                                                 Any]) -> Iterator[Dict[Any, Any]]:
     # Algorithm described in "Algorithms for Enumerating All Perfect, Maximum and Maximal Matchings in Bipartite Graphs"
     # By Takeaki Uno in "Algorithms and Computation: 8th International Symposium, ISAAC '97 Singapore,
     # December 17-19, 1997 Proceedings"
