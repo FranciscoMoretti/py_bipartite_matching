@@ -159,11 +159,10 @@ def _find_feaseable_two_edge_path(graph: nx.Graph, matching: Dict[Any,
                         break
                 if left2 is not None:
                     break
-
     if left2 is None:
+        # Path was not found
         return None
-    else:
-        return [left1, right, left2]
+    return [left1, right, left2]
 
 def _enum_maximum_matchings_iter(graph: nx.Graph, matching: Dict[Any, Any],
                                           directed_match_graph: nx.DiGraph) \
