@@ -5,11 +5,12 @@ Maximum and Maximal Matchings in Bipartite Graphs. From Takeaki Uno publication.
 The function `enum_perfect_matchings` can be used to enumerate all maximum matchings of a `BipartiteGraph`.
 The function `enum_maximum_matchings` can be used to enumerate all maximum matchings of a `BipartiteGraph`.
 """
-from typing import cast, Iterator, Any, Dict, Tuple
+from typing import Iterable, cast, Iterator, Any, Dict, List, Tuple
 
 import copy
 import networkx as nx
 from networkx.algorithms.bipartite.matching import maximum_matching
+from networkx.utils.misc import iterable
 
 from .graphs_utils import (create_directed_matching_graph, find_cycle_with_edge_of_matching,
                            graph_without_edge, graph_without_nodes_of_edge,
@@ -39,6 +40,14 @@ def enum_perfect_matchings(graph: nx.Graph) -> Iterator[Dict[Any, Any]]:
         yield from _enum_perfect_matchings_iter(graph=copy.deepcopy(graph), matching=matching)
 
 
+def _start_cycle_with_left(graph: nx.Graph, raw_cycle: List[Any]) -> Tuple[Any, ...]:
+    # Make sure the cycle "starts"" in the the left part
+    # If not, start the cycle from the second node, which is in the left part
+    if graph.nodes[raw_cycle[0]]['bipartite'] == LEFT:
+        return tuple(raw_cycle[:])
+    else:
+        return tuple(raw_cycle[-1:] + raw_cycle[:-1])
+
 def _enum_perfect_matchings_iter(graph: nx.Graph, matching: Dict[Any, Any]) \
     -> Iterator[Dict[Any, Any]]:
     # Algorithm described in "Algorithms for Enumerating All Perfect, Maximum and Maximal Matchings in Bipartite Graphs"
@@ -61,12 +70,7 @@ def _enum_perfect_matchings_iter(graph: nx.Graph, matching: Dict[Any, Any]) \
     except nx.NetworkXNoCycle:
         return
 
-    # Make sure the cycle "starts"" in the the left part
-    # If not, start the cycle from the second node, which is in the left part
-    if directed_match_graph.nodes[raw_cycle[0]]['bipartite'] == LEFT:
-        cycle = tuple(raw_cycle[:])
-    else:
-        cycle = tuple(raw_cycle[-1:] + raw_cycle[:-1])
+    cycle = _start_cycle_with_left(graph, raw_cycle)
     assert directed_match_graph.nodes[cycle[0]]['bipartite'] == LEFT
 
     # Step 2 - TODO: Properly find right edge? (to get complexity bound)
@@ -155,15 +159,7 @@ def _enum_maximum_matchings_iter(graph: nx.Graph, matching: Dict[Any, Any],
         raw_cycle = []
 
     if raw_cycle:
-        # Make sure the cycle "starts"" in the the left part
-        # If not, start the cycle from the second node, which is in the left part
-
-        # Make sure the cycle "starts"" in the the left part
-        # If not, start the cycle from the second node, which is in the left part
-        if directed_match_graph.nodes[raw_cycle[0]]['bipartite'] == LEFT:
-            cycle = tuple(raw_cycle[:])
-        else:
-            cycle = tuple(raw_cycle[-1:] + raw_cycle[:-1])
+        cycle = _start_cycle_with_left(graph, raw_cycle)
         assert directed_match_graph.nodes[cycle[0]]['bipartite'] == LEFT
 
         # Step 3 - TODO: Properly find right edge? (to get complexity bound)
@@ -238,16 +234,16 @@ def _enum_maximum_matchings_iter(graph: nx.Graph, matching: Dict[Any, Any],
 
         edge = (left2, right)
 
-        # Construct G+(e) and G-(e)
-        graph_plus = graph_without_nodes_of_edge(graph, edge)
-        graph_minus = graph_without_edge(graph, edge)
-
-        dgm_plus = create_directed_matching_graph(graph_plus, top_nodes(graph_plus),
-                                                  matching_prime)
-        dgm_minus = create_directed_matching_graph(graph_minus, top_nodes(graph_minus), matching)
 
         # Step 9
+        # Construct G+(e) and D(G+(e), M\e)
+        graph_plus = graph_without_nodes_of_edge(graph, edge)
+        dgm_plus = create_directed_matching_graph(graph_plus, top_nodes(graph_plus),
+                                                  matching_prime)
         yield from _enum_maximum_matchings_iter(graph_plus, matching_prime, dgm_plus)
 
         # Step 10
+        # Construct G-(e) and D(G-(e), M')
+        graph_minus = graph_without_edge(graph, edge)
+        dgm_minus = create_directed_matching_graph(graph_minus, top_nodes(graph_minus), matching)
         yield from _enum_maximum_matchings_iter(graph_minus, matching, dgm_minus)
