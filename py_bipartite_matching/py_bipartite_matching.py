@@ -10,7 +10,6 @@ from typing import cast, Iterator, Any, Dict, List, Optional, Tuple
 import copy
 import networkx as nx
 from networkx.algorithms.bipartite.matching import maximum_matching
-from networkx.utils.misc import iterable
 
 from .graphs_utils import (create_directed_matching_graph, find_cycle_with_edge_of_matching,
                            graph_without_edge, graph_without_nodes_of_edge,
