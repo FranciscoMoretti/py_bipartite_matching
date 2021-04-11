@@ -1,4 +1,5 @@
 pip==21.0.1
+setuptools_rust=0.12.1
 bump2version==1.0.1
 hypothesis==6.2.0
 matplotlib==3.4.0
