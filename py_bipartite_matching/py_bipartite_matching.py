@@ -5,7 +5,7 @@ Maximum and Maximal Matchings in Bipartite Graphs. From Takeaki Uno publication.
 The function `enum_perfect_matchings` can be used to enumerate all maximum matchings of a `BipartiteGraph`.
 The function `enum_maximum_matchings` can be used to enumerate all maximum matchings of a `BipartiteGraph`.
 """
-from typing import Iterable, cast, Iterator, Any, Dict, List, Tuple
+from typing import Iterable, cast, Iterator, Any, Dict, List, Optional, Tuple
 
 import copy
 import networkx as nx
@@ -138,6 +138,34 @@ def enum_maximum_matchings(graph: nx.Graph) -> Iterator[Dict[Any, Any]]:
                                                 directed_match_graph=trimmed_directed_match_graph)
 
 
+def _find_feaseable_two_edge_path(graph: nx.Graph, matching: Dict[Any,
+                                                                  Any]) -> Optional[List[Any]]:
+    # Find feasible path of length 2 in D(graph, matching)
+    # This path has the form left1 -> right -> left2
+    # left1 must be in the left part of the graph and in matching
+    # right must be in the right part of the graph
+    # left2 is also in the left part of the graph and but must not be in matching
+    left1 = None
+    left2 = None
+    right = None
+
+    for node1 in graph.nodes:
+        if graph.nodes[node1]['bipartite'] == LEFT and node1 in matching.keys():
+            left1 = node1
+            right = matching[left1]
+            if right in graph.nodes:
+                for node2 in graph.neighbors(right):
+                    if node2 not in matching:
+                        left2 = node2
+                        break
+                if left2 is not None:
+                    break
+
+    if left2 is None:
+        return None
+    else:
+        return [left1, right, left2]
+
 def _enum_maximum_matchings_iter(graph: nx.Graph, matching: Dict[Any, Any],
                                           directed_match_graph: nx.DiGraph) \
         -> Iterator[Dict[Any, Any]]:
@@ -199,41 +227,22 @@ def _enum_maximum_matchings_iter(graph: nx.Graph, matching: Dict[Any, Any],
     else:
         # Step 8
         # Find feasible path of length 2 in D(graph, matching)
-        # This path has the form left1 -> right -> left2
-        # left1 must be in the left part of the graph and in matching
-        # right must be in the right part of the graph
-        # left2 is also in the left part of the graph and but must not be in matching
-        left1 = None
-        left2 = None
-        right = None
+        path = _find_feaseable_two_edge_path(graph=graph, matching=matching)
 
-        for node1 in graph.nodes:
-            if graph.nodes[node1]['bipartite'] == LEFT and node1 in matching.keys():
-                left1 = node1
-                right = matching[left1]
-                if right in graph.nodes:
-                    for node2 in graph.neighbors(right):
-                        if node2 not in matching:
-                            left2 = node2
-                            break
-                    if left2 is not None:
-                        break
-
-        if left2 is None:
+        if not path:
             return
 
         # Construct M'
         # Exchange the direction of the path left1 -> right -> left2
         # to left1 <- right <- left2 in the new matching
         matching_prime = matching.copy()
-        del matching_prime[left1]
-        matching_prime[left2] = right
+        del matching_prime[path[0]]
+        matching_prime[path[2]] = path[1]
 
         assert matching_prime != matching
         yield matching_prime
 
-        edge = (left2, right)
-
+        edge = (path[2], path[1])
 
         # Step 9
         # Construct G+(e) and D(G+(e), M\e)
