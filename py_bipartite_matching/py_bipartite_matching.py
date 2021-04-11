@@ -58,7 +58,7 @@ def _enum_perfect_matchings_iter(graph: nx.Graph, matching: Dict[Any, Any]) \
 
     try:
         raw_cycle = find_cycle_with_edge_of_matching(graph=directed_match_graph, matching=matching)
-    except nx.exception.NetworkXNoCycle:
+    except nx.NetworkXNoCycle:
         return
 
     # Make sure the cycle "starts"" in the the left part
@@ -151,7 +151,7 @@ def _enum_maximum_matchings_iter(graph: nx.Graph, matching: Dict[Any, Any],
     # Note that this cycle alternates between nodes from the left and the right part of the graph
     try:
         raw_cycle = find_cycle_with_edge_of_matching(graph=directed_match_graph, matching=matching)
-    except nx.exception.NetworkXNoCycle:
+    except nx.NetworkXNoCycle:
         raw_cycle = []
 
     if raw_cycle:
