@@ -5,7 +5,7 @@ Maximum and Maximal Matchings in Bipartite Graphs. From Takeaki Uno publication.
 The function `enum_perfect_matchings` can be used to enumerate all maximum matchings of a `BipartiteGraph`.
 The function `enum_maximum_matchings` can be used to enumerate all maximum matchings of a `BipartiteGraph`.
 """
-from typing import Iterable, cast, Iterator, Any, Dict, List, Optional, Tuple
+from typing import cast, Iterator, Any, Dict, List, Optional, Tuple
 
 import copy
 import networkx as nx
