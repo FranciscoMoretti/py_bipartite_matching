@@ -1,5 +1,4 @@
 # utils for graphs of the networkx library
-from bidict import bidict
 import copy
 import networkx as nx
 from networkx.algorithms.shortest_paths import shortest_path
@@ -89,37 +88,19 @@ def find_cycle_with_edge_of_matching(graph: nx.Graph, matching: Dict[Any, Any]) 
 
 def find_feasible_path_of_length_2(graph: nx.Graph,
                                    matching: Dict[Any, Any]) -> Optional[Tuple[Any, Any, Any]]:
-    # This path has the form left1 -> right -> left2
-    # left1 must be in the left part of the graph and in matching
-    # right must be in the right part of the graph
-    # left2 is also in the left part of the graph and but must not be in matching
-    bimatching = bidict(matching)
+    # This path has the form top1 -> bottom -> top2 or bottom1 -> top -> bottom2
+    # first: must be in the left part of the graph and in matching
+    # second: must be in the right part of the graph and in matching
+    # third: is also in the left part of the graph and but must not be in matching
 
-    first = None
-    second = None
-    third = None
-
-    for node1 in graph.nodes:
-        if graph.nodes[node1]['bipartite'] == LEFT and node1 in bimatching:
-            first = node1
-            second = matching[first]
-            if second in graph.nodes:
-                for node2 in graph.neighbors(second):
-                    if node2 not in matching:
-                        third = node2
-                        break
-                if third is not None:
-                    return (first, second, third)
-        elif graph.nodes[node1]['bipartite'] == RIGHT and node1 in bimatching.inverse:
-            first = node1
-            second = bimatching.inverse[first]
-            if second in graph.nodes:
-                for node2 in graph.neighbors(second):
-                    if node2 not in bimatching.inverse:
-                        third = node2
-                        break
-                if third is not None:
-                    return (first, second, third)
+    for top, bottom in matching.items():
+        if top in top_nodes(graph) and bottom in bottom_nodes(graph):
+            for new_bottom in graph.neighbors(top):
+                if new_bottom not in matching.values():
+                    return (bottom, top, new_bottom)
+            for new_top in graph.neighbors(bottom):
+                if new_top not in matching:
+                    return (top, bottom, new_top)
     return None
 
 
