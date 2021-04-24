@@ -138,33 +138,6 @@ def enum_maximum_matchings(graph: nx.Graph) -> Iterator[Dict[Any, Any]]:
                                                 directed_match_graph=trimmed_directed_match_graph)
 
 
-def _find_feaseable_two_edge_path(graph: nx.Graph, matching: Dict[Any,
-                                                                  Any]) -> Optional[List[Any]]:
-    # Find feasible path of length 2 in D(graph, matching)
-    # This path has the form left1 -> right -> left2
-    # left1 must be in the left part of the graph and in matching
-    # right must be in the right part of the graph
-    # left2 is also in the left part of the graph and but must not be in matching
-    left1 = None
-    left2 = None
-    right = None
-
-    for node1 in graph.nodes:
-        if graph.nodes[node1]['bipartite'] == LEFT and node1 in matching.keys():
-            left1 = node1
-            right = matching[left1]
-            if right in graph.nodes:
-                for node2 in graph.neighbors(right):
-                    if node2 not in matching:
-                        left2 = node2
-                        break
-                if left2 is not None:
-                    break
-    if left2 is None:
-        # Path was not found
-        return None
-    return [left1, right, left2]
-
 def _enum_maximum_matchings_iter(graph: nx.Graph, matching: Dict[Any, Any],
                                           directed_match_graph: nx.DiGraph) \
         -> Iterator[Dict[Any, Any]]:
