@@ -1,4 +1,5 @@
 # utils for graphs of the networkx library
+from bidict import bidict
 import copy
 import networkx as nx
 from networkx.algorithms.shortest_paths import shortest_path
@@ -92,35 +93,33 @@ def find_feasible_path_of_length_2(graph: nx.Graph,
     # left1 must be in the left part of the graph and in matching
     # right must be in the right part of the graph
     # left2 is also in the left part of the graph and but must not be in matching
-    left1 = None
-    left2 = None
-    right = None
-    left = None
-    right1 = None
-    right2 = None
+    bimatching = bidict(matching)
 
-    inverted_matching = dict(map(reversed, matching.items()))
+    first = None
+    second = None
+    third = None
+
     for node1 in graph.nodes:
-        if graph.nodes[node1]['bipartite'] == LEFT and node1 in matching.keys():
-            left1 = node1
-            right = matching[left1]
-            if right in graph.nodes:
-                for node2 in graph.neighbors(right):
+        if graph.nodes[node1]['bipartite'] == LEFT and node1 in bimatching:
+            first = node1
+            second = matching[first]
+            if second in graph.nodes:
+                for node2 in graph.neighbors(second):
                     if node2 not in matching:
-                        left2 = node2
+                        third = node2
                         break
-                if left2 is not None:
-                    return (left1, right, left2)
-        elif graph.nodes[node1]['bipartite'] == RIGHT and node1 in inverted_matching.keys():
-            right1 = node1
-            left = inverted_matching[right1]
-            if left in graph.nodes:
-                for node2 in graph.neighbors(left):
-                    if node2 not in inverted_matching:
-                        right2 = node2
+                if third is not None:
+                    return (first, second, third)
+        elif graph.nodes[node1]['bipartite'] == RIGHT and node1 in bimatching.inverse:
+            first = node1
+            second = bimatching.inverse[first]
+            if second in graph.nodes:
+                for node2 in graph.neighbors(second):
+                    if node2 not in bimatching.inverse:
+                        third = node2
                         break
-                if right2 is not None:
-                    return (right1, left, right2)
+                if third is not None:
+                    return (first, second, third)
     return None
 
 
