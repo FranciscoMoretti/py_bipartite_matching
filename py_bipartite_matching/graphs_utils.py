@@ -10,7 +10,7 @@ RIGHT = 1
 
 def top_nodes(graph: nx.Graph,
               data: bool = False) -> Union[Iterator[Any], Iterator[Tuple[Any, Any]]]:
-    for node_id, node_data in graph.nodes(data=True):
+    for node_id, node_data in graph.nodes(data=True).__iter__():
         if node_data['bipartite'] == 0:
             if data:
                 yield node_id, node_data
@@ -20,7 +20,7 @@ def top_nodes(graph: nx.Graph,
 
 def bottom_nodes(graph: nx.Graph,
                  data: bool = False) -> Union[Iterator[Any], Iterator[Tuple[Any, Any]]]:
-    for node_id, node_data in graph.nodes(data=True):
+    for node_id, node_data in graph.nodes(data=True).__iter__():
         if node_data['bipartite'] == 1:
             if data:
                 yield node_id, node_data
