@@ -4,6 +4,9 @@ import networkx as nx
 from networkx.algorithms.shortest_paths import shortest_path
 from typing import Any, Union, Optional, Iterator, Iterable, Tuple, Dict, List, cast
 
+LEFT = 0
+RIGHT = 1
+
 
 def top_nodes(graph: nx.Graph,
               data: bool = False) -> Union[Iterator[Any], Iterator[Tuple[Any, Any]]]:
@@ -81,6 +84,44 @@ def find_cycle_with_edge_of_matching(graph: nx.Graph, matching: Dict[Any, Any]) 
             return cast(List[Any], path)
     # No cycle was found
     raise nx.NetworkXNoCycle
+
+
+def find_feasible_path_of_length_2(graph: nx.Graph,
+                                   matching: Dict[Any, Any]) -> Optional[Tuple[Any, Any, Any]]:
+    # This path has the form left1 -> right -> left2
+    # left1 must be in the left part of the graph and in matching
+    # right must be in the right part of the graph
+    # left2 is also in the left part of the graph and but must not be in matching
+    left1 = None
+    left2 = None
+    right = None
+    left = None
+    right1 = None
+    right2 = None
+
+    inverted_matching = dict(map(reversed, matching.items()))
+    for node1 in graph.nodes:
+        if graph.nodes[node1]['bipartite'] == LEFT and node1 in matching.keys():
+            left1 = node1
+            right = matching[left1]
+            if right in graph.nodes:
+                for node2 in graph.neighbors(right):
+                    if node2 not in matching:
+                        left2 = node2
+                        break
+                if left2 is not None:
+                    return (left1, right, left2)
+        elif graph.nodes[node1]['bipartite'] == RIGHT and node1 in inverted_matching.keys():
+            right1 = node1
+            left = inverted_matching[right1]
+            if left in graph.nodes:
+                for node2 in graph.neighbors(left):
+                    if node2 not in inverted_matching:
+                        right2 = node2
+                        break
+                if right2 is not None:
+                    return (right1, left, right2)
+    return None
 
 
 def strongly_connected_components_decomposition(graph: nx.DiGraph) -> nx.DiGraph:
