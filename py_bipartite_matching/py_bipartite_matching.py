@@ -12,7 +12,7 @@ import networkx as nx
 from networkx.algorithms.bipartite.matching import maximum_matching
 
 from .graphs_utils import (create_directed_matching_graph, find_cycle_with_edge_of_matching,
-                           find_feasible_path_of_length_2, graph_without_edge,
+                           find_feasible_two_edge_path, graph_without_edge,
                            graph_without_nodes_of_edge,
                            strongly_connected_components_decomposition, top_nodes, bottom_nodes)
 
@@ -199,7 +199,7 @@ def _enum_maximum_matchings_iter(graph: nx.Graph, matching: Dict[Any, Any],
     else:
         # Step 8
         # Find feasible path of length 2 in D(graph, matching)
-        path = find_feasible_path_of_length_2(graph, matching)
+        path = find_feasible_two_edge_path(graph, matching)
         if not path:
             return
         (first, second, third) = path

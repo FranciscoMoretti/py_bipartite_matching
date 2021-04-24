@@ -86,8 +86,8 @@ def find_cycle_with_edge_of_matching(graph: nx.Graph, matching: Dict[Any, Any]) 
     raise nx.NetworkXNoCycle
 
 
-def find_feasible_path_of_length_2(graph: nx.Graph,
-                                   matching: Dict[Any, Any]) -> Optional[Tuple[Any, Any, Any]]:
+def find_feasible_two_edge_path(graph: nx.Graph,
+                                matching: Dict[Any, Any]) -> Optional[Tuple[Any, Any, Any]]:
     # This path has the form top1 -> bottom -> top2 or bottom1 -> top -> bottom2
     # first: must be in the left part of the graph and in matching
     # second: must be in the right part of the graph and in matching
