@@ -207,23 +207,19 @@ def _enum_maximum_matchings_iter(graph: nx.Graph, matching: Dict[Any, Any],
         path = find_feasible_path_of_length_2(graph, matching)
         if not path:
             return
+        (first, second, third) = path
 
-        if path[0] in matching.keys():
-            # Construct M'
-            # Exchange the direction of the path left1 -> right -> left2
-            # to left1 <- right <- left2 in the new matching
+        # Construct M'
+        if first in matching.keys():
             matching_prime = matching.copy()
-            del matching_prime[path[0]]
-            matching_prime[path[2]] = path[1]
-            edge = (path[2], path[1])
+            del matching_prime[first]
+            matching_prime[third] = second
+            edge = (third, second)
         else:
-            # Construct M'
-            # Exchange the direction of the path right1 -> left -> right2
-            # to right1 <- left <- right2 in the new matching
             matching_prime = matching.copy()
-            del matching_prime[path[1]]
-            matching_prime[path[1]] = path[2]
-            edge = (path[1], path[2])
+            del matching_prime[second]
+            matching_prime[second] = third
+            edge = (second, third)
 
         assert matching_prime != matching
         yield matching_prime
