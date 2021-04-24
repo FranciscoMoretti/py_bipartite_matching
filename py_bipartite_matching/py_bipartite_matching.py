@@ -210,7 +210,11 @@ def _enum_maximum_matchings_iter(graph: nx.Graph, matching: Dict[Any, Any],
         left1 = None
         left2 = None
         right = None
+        left = None
+        right1 = None
+        right2 = None
 
+        inverted_matching = dict(map(reversed, matching.items()))
         for node1 in graph.nodes:
             if graph.nodes[node1]['bipartite'] == LEFT and node1 in matching.keys():
                 left1 = node1
@@ -222,21 +226,39 @@ def _enum_maximum_matchings_iter(graph: nx.Graph, matching: Dict[Any, Any],
                             break
                     if left2 is not None:
                         break
+            elif graph.nodes[node1]['bipartite'] == RIGHT and node1 in inverted_matching.keys():
+                right1 = node1
+                left = inverted_matching[right1]
+                if left in graph.nodes:
+                    for node2 in graph.neighbors(left):
+                        if node2 not in inverted_matching:
+                            right2 = node2
+                            break
+                    if right2 is not None:
+                        break
 
-        if left2 is None:
+        if left2 is None and right2 is None:
             return
 
-        # Construct M'
-        # Exchange the direction of the path left1 -> right -> left2
-        # to left1 <- right <- left2 in the new matching
-        matching_prime = matching.copy()
-        del matching_prime[left1]
-        matching_prime[left2] = right
+        if left2 is not None:
+            # Construct M'
+            # Exchange the direction of the path left1 -> right -> left2
+            # to left1 <- right <- left2 in the new matching
+            matching_prime = matching.copy()
+            del matching_prime[left1]
+            matching_prime[left2] = right
+            edge = (left2, right)
+        else:
+            # Construct M' (with right2)
+            # Exchange the direction of the path right1 -> left -> right2
+            # to right1 <- left <- right2 in the new matching
+            matching_prime = matching.copy()
+            del matching_prime[left]
+            matching_prime[left] = right2
+            edge = (left, right2)
 
         assert matching_prime != matching
         yield matching_prime
-
-        edge = (left2, right)
 
         # Construct G+(e) and G-(e)
         graph_plus = graph_without_nodes_of_edge(graph, edge)

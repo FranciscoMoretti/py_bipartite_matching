@@ -106,9 +106,7 @@ def test_perfect_matchings_completeness(n):
     print_debug_info(graph=graph, matchings=matchings)
 
 
-@pytest.mark.parametrize('n, m',
-                         filter(lambda x: x[0] >= x[1],
-                                itertools.product(range(1, 6), range(0, 4))))
+@pytest.mark.parametrize('n, m', itertools.product(range(1, 6), range(0, 4)))
 def test_maximum_matchings_completeness(n, m):
     print("Testing maximum_matchings_completeness")
     # Create a complete bipartite graph
@@ -117,7 +115,7 @@ def test_maximum_matchings_completeness(n, m):
     matchings = {frozenset(matching.items()) for matching in \
         enum_maximum_matchings(graph)}
     # The matchings count should be equal to n!/(n-m)! if m > 0, 0 otherwise
-    expected_count = int(math.factorial(n) / math.factorial(n - m)) if m > 0 else 0
+    expected_count = int(math.factorial(max(n, m)) / math.factorial(abs(n - m))) if m > 0 else 0
     assert len(matchings) == expected_count
     print_debug_info(graph=graph, matchings=matchings)
 
