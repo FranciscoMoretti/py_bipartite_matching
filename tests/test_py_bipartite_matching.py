@@ -5,9 +5,10 @@ import itertools
 import math
 
 import hypothesis.strategies as st
-from hypothesis import given
+from hypothesis import given, example
 import pytest
 
+from py_bipartite_matching.brute_force_bipartite_matching import brute_force_enum_perfect_matchings
 from py_bipartite_matching.py_bipartite_matching import enum_perfect_matchings, enum_maximum_matchings
 import py_bipartite_matching.graphs_utils as gu
 
@@ -70,10 +71,14 @@ def test_enum_perfect_matchings_correctness(n_k_seed):
         frozen_matching = frozenset(matching.items())
         assert frozen_matching not in matchings, "Matching was duplicate"
         matchings.add(frozen_matching)
+    brute_matchings = {frozenset(matching.items()) for matching in \
+        brute_force_enum_perfect_matchings(graph)}
+    assert matchings == brute_matchings
     print_debug_info(graph=graph, matchings=matchings)
 
 
 @given(bipartite_graph_inputs())
+@example((5, 3, 7, 0))
 def test_enum_maximum_matchings_correctness(n_m_k_seed):
     print("Testing enum_maximum_matchings_correctness")
     n, m, k, seed = n_m_k_seed
@@ -101,6 +106,9 @@ def test_perfect_matchings_completeness(n):
     # Create a set of matchings to be sure there are no repetitions
     matchings = {frozenset(matching.items()) for matching in \
         enum_perfect_matchings(graph)}
+    brute_force_matchings = {frozenset(matching.items()) for matching in \
+        brute_force_enum_perfect_matchings(graph)}
+    assert matchings == brute_force_matchings
     # The matchings count should be equal to n!
     assert len(matchings) == int(math.factorial(n))
     print_debug_info(graph=graph, matchings=matchings)
@@ -131,3 +139,17 @@ def test_create_directed_matching_graph(n_m_k_seed):
                                                 matching=matching)
     assert graph.nodes == digraph.nodes
     assert len(graph.edges) == len(digraph.edges)
+
+
+@given(balanced_bipartite_graph_inputs())
+def test_brute_force_enum_perfect_matchings(n_k_seed):
+    print("Testing brute_force_enum_perfect_matchings_correctness")
+    n, k, seed = n_k_seed
+    graph = nx.bipartite.gnmk_random_graph(n, n, k, seed)
+
+    matchings = {frozenset(matching.items()) for matching in \
+        enum_perfect_matchings(graph)}
+    brute_force_matchings = {frozenset(matching.items()) for matching in \
+        brute_force_enum_perfect_matchings(graph)}
+    assert matchings == brute_force_matchings
+    print_debug_info(graph=graph, matchings=matchings)
