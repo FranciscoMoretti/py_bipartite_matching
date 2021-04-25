@@ -2,7 +2,7 @@
 
 __author__ = """Francisco Moretti"""
 __email__ = 'franciscoemoretti@gmail.com'
-__version__ = '0.1.16'
+__version__ = '0.2.0'
 
 # flake8: noqa
 
