@@ -8,7 +8,8 @@ import hypothesis.strategies as st
 from hypothesis import given, example
 import pytest
 
-from py_bipartite_matching.brute_force_bipartite_matching import brute_force_enum_perfect_matchings
+from py_bipartite_matching.brute_force_bipartite_matching import (
+    brute_force_enum_perfect_matchings, brute_force_enum_maximum_matchings)
 from py_bipartite_matching.py_bipartite_matching import enum_perfect_matchings, enum_maximum_matchings
 import py_bipartite_matching.graphs_utils as gu
 
@@ -151,5 +152,19 @@ def test_brute_force_enum_perfect_matchings(n_k_seed):
         enum_perfect_matchings(graph)}
     brute_force_matchings = {frozenset(matching.items()) for matching in \
         brute_force_enum_perfect_matchings(graph)}
+    assert matchings == brute_force_matchings
+    print_debug_info(graph=graph, matchings=matchings)
+
+
+@given(bipartite_graph_inputs())
+def test_brute_force_enum_maximum_matchings(n_m_k_seed):
+    print("Testing brute_force_enum_maximum_matchings")
+    n, m, k, seed = n_m_k_seed
+    graph = nx.bipartite.gnmk_random_graph(n, m, k, seed)
+
+    matchings = {frozenset(matching.items()) for matching in \
+        enum_maximum_matchings(graph)}
+    brute_force_matchings = {frozenset(matching.items()) for matching in \
+        brute_force_enum_maximum_matchings(graph)}
     assert matchings == brute_force_matchings
     print_debug_info(graph=graph, matchings=matchings)
