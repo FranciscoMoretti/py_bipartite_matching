@@ -25,3 +25,17 @@ def brute_force_enum_perfect_matchings(graph: nx.Graph) -> Iterator[Dict[Any, An
             if len(set(values)) == len(values):
                 matching = {k: v for k, v in zip(top_nodes(graph), values)}
                 yield matching
+
+
+def brute_force_enum_maximum_matchings(graph: nx.Graph) -> Iterator[Dict[Any, Any]]:
+    matching = maximum_matching(graph, top_nodes=top_nodes(graph))
+    matching = {k: v for k, v in matching.items() if k in top_nodes(graph)}
+    matching_len = len(matching)
+    if matching_len == 0:
+        return
+    for edges in itertools.combinations(graph.edges(), matching_len):
+        if len({edge[0] for edge in edges}) < matching_len:
+            continue
+        if len({edge[1] for edge in edges}) < matching_len:
+            continue
+        yield dict(edges)
