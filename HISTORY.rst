@@ -2,6 +2,14 @@
 History
 =======
 
+0.2.0 (2021-04-25)
+--------------------------------------------------------
+
+* Implemented brute force functions
+* Increased testing of perfect and maximum matching enumerators
+* Fixed maximum matching enumeration (some results were missing)
+* improve code cleanness
+
 0.1.16 (2021-04-04)
 --------------------------------------------------------
 
