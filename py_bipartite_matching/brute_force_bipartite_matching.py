@@ -20,8 +20,7 @@ def brute_force_enum_perfect_matchings(graph: nx.Graph) -> Iterator[Dict[Any, An
     matching = maximum_matching(graph, top_nodes=top_nodes(graph))
     matching = {k: v for k, v in matching.items() if k in top_nodes(graph)}
     if matching and len(matching) == size:
-        for values in itertools.product(
-                *map(lambda node: graph.neighbors(node), top_nodes(graph))):
+        for values in itertools.product(*map(graph.neighbors, top_nodes(graph))):
             if len(set(values)) == len(values):
                 matching = {k: v for k, v in zip(top_nodes(graph), values)}
                 yield matching
