@@ -138,6 +138,21 @@ def enum_maximum_matchings(graph: nx.Graph) -> Iterator[Dict[Any, Any]]:
                                                 directed_match_graph=trimmed_directed_match_graph)
 
 
+def _get_new_matching_by_exchanging_edges(matching: Dict[Any, Any],
+                                          two_edge_path: Tuple[Any, Any, Any]) -> Dict[Any, Any]:
+    (first, second, third) = two_edge_path
+
+    # Construct M'
+    if first in matching.keys():
+        matching_prime = matching.copy()
+        del matching_prime[first]
+        matching_prime[third] = second
+    else:
+        matching_prime = matching.copy()
+        del matching_prime[second]
+        matching_prime[second] = third
+    return matching_prime
+
 def _enum_maximum_matchings_iter(graph: nx.Graph, matching: Dict[Any, Any],
                                           directed_match_graph: nx.DiGraph) \
         -> Iterator[Dict[Any, Any]]:
@@ -199,23 +214,14 @@ def _enum_maximum_matchings_iter(graph: nx.Graph, matching: Dict[Any, Any],
     else:
         # Step 8
         # Find feasible path of length 2 in D(graph, matching)
-        path = find_feasible_two_edge_path(graph, matching)
-        if not path:
+        two_edge_path = find_feasible_two_edge_path(graph, matching)
+        if not two_edge_path:
             return
-        (first, second, third) = path
 
-        # Construct M'
-        if first in matching.keys():
-            matching_prime = matching.copy()
-            del matching_prime[first]
-            matching_prime[third] = second
-            edge = (third, second)
-        else:
-            matching_prime = matching.copy()
-            del matching_prime[second]
-            matching_prime[second] = third
-            edge = (second, third)
-
+        # remove the node that is in the matching to only keep the new edge
+        edge = two_edge_path[:0:-1] if two_edge_path[0] in matching.keys() else two_edge_path[1::]
+        matching_prime = _get_new_matching_by_exchanging_edges(matching=matching,
+                                                               two_edge_path=two_edge_path)
         assert matching_prime != matching
         yield matching_prime
 
