@@ -279,7 +279,7 @@ def enum_maximal_matchings(graph: nx.Graph) -> Iterator[Dict[Any, Any]]:
     # Find a maximum matching M in G'. If |M| = d(v),
     # then enumerate all maximum matchings in G' by ENUM_MAXIMUM_MATCHING_ITER(M,G').
     matching = maximum_matching(graph_prime, top_nodes=top_nodes(graph_prime))
-    matching = {k: v for k, v in matching.items() if k in top_nodes(graph)}
+    matching = {k: v for k, v in matching.items() if k in top_nodes(graph_prime)}
     if len(matching) == degree:
         directed_match_graph = create_directed_matching_graph(graph_prime, top_nodes(graph_prime),
                                                               matching)
@@ -287,7 +287,7 @@ def enum_maximal_matchings(graph: nx.Graph) -> Iterator[Dict[Any, Any]]:
                                                          directed_match_graph):
             # Step 5
             # For each matching, enumerate all maximal matchings including it.
-            subgraph = nx.Graph(graph)
+            subgraph = nx.Graph(graph_prime)
             for edge in max_matching.items():
                 subgraph = graph_without_nodes_of_edge(subgraph, edge)
             for maximal_matching in enum_maximal_matchings(subgraph):
