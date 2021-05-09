@@ -242,15 +242,14 @@ def _enum_maximum_matchings_iter(graph: nx.Graph, matching: Dict[Any, Any],
 def enum_maximal_matchings(graph: nx.Graph) -> Iterator[Dict[Any, Any]]:
     # Step 1
     # If all vertices of G have degrees 0 or 1, output the unique maximal matching of G and stop.
-    if all(map(lambda node_degree: node_degree[1] < 2, graph.degree)):
+    node_degree = next((node_degree for node_degree in graph.degree if node_degree[1] >= 2), None)
+    if node_degree is None:
         matching = maximum_matching(graph, top_nodes=top_nodes(graph))
         yield {k: v for k, v in matching.items() if k in top_nodes(graph)}
         return
 
     # Step 2
     # Choose a vertex v with degree at least 2.
-    node_degree = next((node_degree for node_degree in graph.degree if node_degree[1] >= 2))
-    assert (node_degree != None)
     node, degree = node_degree
 
     for neighbor in graph.neighbors(node):
