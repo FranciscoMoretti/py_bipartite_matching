@@ -140,7 +140,7 @@ def create_directed_matching_graph(graph: nx.Graph, top_nodes: Iterable[Any],
 
 def graph_without_nodes_of_edge(graph: nx.Graph, edge: Tuple[Any, Any]) -> nx.Graph:
     """Returns a copy of this bipartite graph with the given edge and its adjacent nodes removed."""
-    new_graph = copy.deepcopy(graph)
+    new_graph = nx.Graph(graph)
 
     new_graph.remove_node(edge[0])
     new_graph.remove_node(edge[1])
@@ -151,7 +151,7 @@ def graph_without_nodes_of_edge(graph: nx.Graph, edge: Tuple[Any, Any]) -> nx.Gr
 
 def graph_without_edge(graph: nx.Graph, edge: Tuple[Any, Any]) -> nx.Graph:
     """Returns a copy of this bipartite graph with the given edge removed."""
-    new_graph = copy.deepcopy(graph)
+    new_graph = nx.Graph(graph)
     new_graph.remove_edge(*edge)
 
     assert len(new_graph.edges) == len(graph.edges) - 1
