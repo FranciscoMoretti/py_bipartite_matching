@@ -249,46 +249,48 @@ def enum_maximal_matchings(graph: nx.Graph) -> Iterator[Dict[Any, Any]]:
 
     # Step 2
     # Choose a vertex v with degree at least 2.
-    for node, degree in graph.degree:
-        if degree >= 2:
-            for neighbor in graph.neighbors(node):
-                # Step 3: For each edge e in G incident to v, construct G + (e) and enumerate all maximal
-                # matchings including e by recursive calls.
-                # After the recursive call, reconstruct G from G + (e)
+    node_degree = next((node_degree for node_degree in graph.degree if node_degree[1] >= 2))
+    assert (node_degree != None)
+    node, degree = node_degree
 
-                # Oder nodes in the edge according to matching convention
-                edge = (node, neighbor)
-                edge = edge if edge[0] in top_nodes(graph) else edge[::-1]
-                # Create G+(e)
-                graph_plus = graph_without_nodes_of_edge(graph, edge)
-                # Recursively get maximal matchings from G+(e) and then add e
-                for maximal_matching in enum_maximal_matchings(graph_plus):
-                    maximal_matching.update({edge})
-                    yield maximal_matching
+    for neighbor in graph.neighbors(node):
+        # Step 3: For each edge e in G incident to v, construct G + (e) and enumerate all maximal
+        # matchings including e by recursive calls.
+        # After the recursive call, reconstruct G from G + (e)
 
-            # Let G' be the subgraph composed of edges incident
-            # to vertices adjacent to v, except for edges incident to v
-            edges = set()
-            for neighbor in graph.neighbors(node):
-                for second_neighbor in graph.neighbors(neighbor):
-                    if second_neighbor is not node:
-                        edges.add(tuple(sorted((neighbor, second_neighbor))))
-            graph_prime = graph.edge_subgraph(edges)
-            # Step 4
-            # Find a maximum matching M in G'. If |M| = d(v),
-            # then enumerate all maximum matchings in G' by ENUM_MAXIMUM_MATCHING_ITER(M,G').
-            matching = maximum_matching(graph_prime, top_nodes=top_nodes(graph_prime))
-            matching = {k: v for k, v in matching.items() if k in top_nodes(graph)}
-            if len(matching) == degree:
-                directed_match_graph = create_directed_matching_graph(
-                    graph_prime, top_nodes(graph_prime), matching)
-                for max_matching in _enum_maximum_matchings_iter(graph_prime, matching,
-                                                                 directed_match_graph):
-                    # Step 5
-                    # For each matching, enumerate all maximal matchings including it.
-                    subgraph = copy.deepcopy(graph)
-                    for edge in max_matching.items():
-                        subgraph = graph_without_nodes_of_edge(subgraph, edge)
-                        for maximal_matching in enum_maximal_matchings(subgraph):
-                            maximal_matching.update(max_matching)
-                            yield maximal_matching
+        # Oder nodes in the edge according to matching convention
+        edge = (node, neighbor)
+        edge = edge if edge[0] in top_nodes(graph) else edge[::-1]
+        # Create G+(e)
+        graph_plus = graph_without_nodes_of_edge(graph, edge)
+        # Recursively get maximal matchings from G+(e) and then add e
+        for maximal_matching in enum_maximal_matchings(graph_plus):
+            maximal_matching.update({edge})
+            yield maximal_matching
+
+    # Let G' be the subgraph composed of edges incident
+    # to vertices adjacent to v, except for edges incident to v
+    edges = set()
+    for neighbor in graph.neighbors(node):
+        for second_neighbor in graph.neighbors(neighbor):
+            if second_neighbor is not node:
+                edges.add(tuple(sorted((neighbor, second_neighbor))))
+    graph_prime = graph.edge_subgraph(edges)
+    # Step 4
+    # Find a maximum matching M in G'. If |M| = d(v),
+    # then enumerate all maximum matchings in G' by ENUM_MAXIMUM_MATCHING_ITER(M,G').
+    matching = maximum_matching(graph_prime, top_nodes=top_nodes(graph_prime))
+    matching = {k: v for k, v in matching.items() if k in top_nodes(graph)}
+    if len(matching) == degree:
+        directed_match_graph = create_directed_matching_graph(graph_prime, top_nodes(graph_prime),
+                                                              matching)
+        for max_matching in _enum_maximum_matchings_iter(graph_prime, matching,
+                                                         directed_match_graph):
+            # Step 5
+            # For each matching, enumerate all maximal matchings including it.
+            subgraph = nx.Graph(graph)
+            for edge in max_matching.items():
+                subgraph = graph_without_nodes_of_edge(subgraph, edge)
+            for maximal_matching in enum_maximal_matchings(subgraph):
+                maximal_matching.update(max_matching)
+                yield maximal_matching
