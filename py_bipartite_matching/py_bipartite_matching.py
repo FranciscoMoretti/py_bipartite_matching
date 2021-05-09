@@ -253,9 +253,9 @@ def enum_maximal_matchings(graph: nx.Graph) -> Iterator[Dict[Any, Any]]:
     node, degree = node_degree
 
     for neighbor in graph.neighbors(node):
-        # Step 3: For each edge e in G incident to v, construct G + (e) and enumerate all maximal
+        # Step 3: For each edge e in G incident to v, construct G+(e) and enumerate all maximal
         # matchings including e by recursive calls.
-        # After the recursive call, reconstruct G from G + (e)
+        # After the recursive call, reconstruct G from G+(e)
 
         # Oder nodes in the edge according to matching convention
         edge = (node, neighbor)
