@@ -3,9 +3,11 @@ import networkx as nx
 
 from py_bipartite_matching.py_bipartite_matching import enum_perfect_matchings
 from py_bipartite_matching.graphs_utils import top_nodes, bottom_nodes
+# import matplotlib.pyplot as plt
+from typing import Any, Dict
 
 
-def print_debug_info(graph, matchings):
+def print_debug_info(graph: nx.Graph, matchings: Dict[Any, Any]):
     print("Graph and matchings")
     print(f"Nodes :{graph.nodes}")
     print(f"Edges :{graph.edges}")
